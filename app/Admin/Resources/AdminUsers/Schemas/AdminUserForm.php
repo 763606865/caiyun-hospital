@@ -2,6 +2,7 @@
 
 namespace App\Admin\Resources\AdminUsers\Schemas;
 
+use App\Models\AdminRole;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -37,6 +38,9 @@ class AdminUserForm
                         name: 'roles',
                         titleAttribute: 'name',
                         modifyQueryUsing: fn ($query) => $query->where('guard_name', 'admin'),
+                    )
+                    ->getOptionLabelFromRecordUsing(
+                        fn (AdminRole $record): string => $record->label(),
                     )
                     ->multiple()
                     ->preload()

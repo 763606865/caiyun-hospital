@@ -2,6 +2,7 @@
 
 namespace App\Admin\Resources\AdminRoles\Schemas;
 
+use App\Models\AdminPermission;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
@@ -26,6 +27,9 @@ class AdminRoleForm
                         name: 'permissions',
                         titleAttribute: 'name',
                         modifyQueryUsing: fn ($query) => $query->where('guard_name', 'admin'),
+                    )
+                    ->getOptionLabelFromRecordUsing(
+                        fn (AdminPermission $record): string => $record->label(),
                     )
                     ->bulkToggleable()
                     ->columns(2)

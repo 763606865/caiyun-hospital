@@ -26,6 +26,9 @@ class AdminUsersTable
                     ->sortable(),
                 TextColumn::make('roles.name')
                     ->label('角色')
+                    ->formatStateUsing(
+                        fn (string $state): string => $state === 'super-admin' ? '超级管理员' : $state,
+                    )
                     ->badge()
                     ->separator(','),
                 IconColumn::make('is_active')

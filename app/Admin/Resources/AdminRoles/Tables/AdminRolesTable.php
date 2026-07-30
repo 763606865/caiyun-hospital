@@ -2,6 +2,7 @@
 
 namespace App\Admin\Resources\AdminRoles\Tables;
 
+use App\Models\AdminRole;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -16,6 +17,9 @@ class AdminRolesTable
             ->columns([
                 TextColumn::make('name')
                     ->label('角色名称')
+                    ->formatStateUsing(
+                        fn (string $state, AdminRole $record): string => $record->label(),
+                    )
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('permissions_count')
