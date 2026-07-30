@@ -8,15 +8,26 @@
         "framework"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "Libs/Sms",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "require": {
+        "caiyun/sms": "@dev",
         "php": "^8.3",
         "filament/filament": "^5.7",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/framework": "^13.17",
-        "laravel/passport": "^13.7",
+        "laravel/sanctum": "^4.0",
         "laravel/scout": "^11.4",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
+        "spatie/laravel-permission": "^8.0",
         "yansongda/pay": "^3.7"
     },
     "require-dev": {
