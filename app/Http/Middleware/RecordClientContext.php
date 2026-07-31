@@ -7,6 +7,7 @@ use App\Enums\ClientType;
 use App\Models\ApiRequestLog;
 use App\Models\User;
 use App\Support\ApiResponse;
+use App\Support\ClientVersionChecker;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +22,8 @@ use Throwable;
  */
 class RecordClientContext
 {
+    public function __construct(private readonly ClientVersionChecker $versionChecker) {}
+
     public function handle(Request $request, Closure $next): Response
     {
         $startedAt = hrtime(true);
@@ -59,7 +62,9 @@ class RecordClientContext
         } else {
             $validated = $validator->validated();
             $request->attributes->set('client_context', $validated);
-            $response = $next($request);
+            $response = $this->requiresClientUpgrade($request, $validated)
+                ? ApiResponse::error('客户端版本过低，请升级后继续使用', Response::HTTP_UPGRADE_REQUIRED)
+                : $next($request);
         }
 
         $response->headers->set('X-Request-ID', $requestId);
@@ -68,6 +73,23 @@ class RecordClientContext
         $this->recordRequestLog($request, $response, $validated, $startedAt);
 
         return $response;
+    }
+
+    /**
+     * 判断当前 API 请求是否应被最低版本策略拦截。
+     *
+     * @param  array<string, string>  $context
+     */
+    private function requiresClientUpgrade(Request $request, array $context): bool
+    {
+        /** @var list<string> $excludedPaths */
+        $excludedPaths = config('client.version_check_excluded_paths', []);
+
+        if (in_array($request->path(), $excludedPaths, true)) {
+            return false;
+        }
+
+        return $this->versionChecker->check($context)['below_minimum'];
     }
 
     /**
