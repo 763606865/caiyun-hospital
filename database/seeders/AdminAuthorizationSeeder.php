@@ -26,6 +26,13 @@ class AdminAuthorizationSeeder extends Seeder
             'users.create',
             'users.update',
             'users.delete',
+            'client-versions.view',
+            'client-versions.create',
+            'client-versions.update',
+            'client-versions.delete',
+            'system-settings.view',
+            'system-settings.create',
+            'system-settings.update',
         ];
 
         foreach ($permissions as $permission) {

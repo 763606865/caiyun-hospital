@@ -3,7 +3,9 @@
 namespace Tests\Feature\Models;
 
 use App\Admin\Resources\SystemSettings\SystemSettingResource;
+use App\Models\AdminUser;
 use App\Models\SystemSetting;
+use Database\Seeders\AdminAuthorizationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,6 +36,16 @@ class SystemSettingTest extends TestCase
 
     public function test_model_defaults_and_admin_singleton_creation_rule(): void
     {
+        $this->seed(AdminAuthorizationSeeder::class);
+        $admin = AdminUser::query()->create([
+            'name' => 'System Admin',
+            'email' => 'system-setting@example.com',
+            'password' => 'password',
+            'is_active' => true,
+        ]);
+        $admin->assignRole('super-admin');
+        $this->actingAs($admin, 'admin');
+
         $setting = SystemSetting::current();
 
         $this->assertFalse($setting->exists);

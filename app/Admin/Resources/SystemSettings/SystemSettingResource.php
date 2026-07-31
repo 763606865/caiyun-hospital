@@ -34,7 +34,8 @@ class SystemSettingResource extends Resource
 
     public static function canCreate(): bool
     {
-        return ! SystemSetting::query()->where('key', SystemSetting::DEFAULT_KEY)->exists();
+        return parent::canCreate()
+            && ! SystemSetting::query()->where('key', SystemSetting::DEFAULT_KEY)->exists();
     }
 
     public static function form(Schema $schema): Schema

@@ -2,64 +2,47 @@
 
 namespace App\Policies;
 
+use App\Models\AdminUser;
 use App\Models\SystemSetting;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SystemSettingPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    public function viewAny(AdminUser $admin): bool
+    {
+        return $admin->can('system-settings.view');
+    }
+
+    public function view(AdminUser $admin, SystemSetting $systemSetting): bool
+    {
+        return $admin->can('system-settings.view');
+    }
+
+    public function create(AdminUser $admin): bool
+    {
+        return $admin->can('system-settings.create');
+    }
+
+    public function update(AdminUser $admin, SystemSetting $systemSetting): bool
+    {
+        return $admin->can('system-settings.update');
+    }
+
+    public function delete(AdminUser $admin, SystemSetting $systemSetting): bool
     {
         return false;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, SystemSetting $systemSetting): bool
+    public function deleteAny(AdminUser $admin): bool
     {
         return false;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function restore(AdminUser $admin, SystemSetting $systemSetting): bool
     {
         return false;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, SystemSetting $systemSetting): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, SystemSetting $systemSetting): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, SystemSetting $systemSetting): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, SystemSetting $systemSetting): bool
+    public function forceDelete(AdminUser $admin, SystemSetting $systemSetting): bool
     {
         return false;
     }
