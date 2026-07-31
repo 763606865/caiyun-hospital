@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('user_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->comment('所属用户 ID');
+            $table->foreignId('user_id')->comment('所属用户 ID')->constrained()->cascadeOnDelete();
             $table->string('provider', 32)->comment('第三方平台：wechat/alipay/douyin 等');
             $table->string('app_id', 128)->default('default')->comment('第三方应用 ID');
             $table->string('provider_account_id', 191)->comment('平台账号唯一标识，例如微信 openid');

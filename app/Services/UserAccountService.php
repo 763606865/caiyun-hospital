@@ -50,7 +50,9 @@ class UserAccountService
                 ]);
             }
 
-            $user = $account?->user ?? $this->findOrCreateUserByPhone($phone);
+            $user = $account === null
+                ? $this->findOrCreateUserByPhone($phone)
+                : $account->user;
 
             $account = UserAccount::query()->updateOrCreate(
                 [

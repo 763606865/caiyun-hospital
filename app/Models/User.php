@@ -63,6 +63,8 @@ class User extends Authenticatable
         static::creating(function (Model $model): void {
             /** @var self $model */
             $model->uuid ??= (string) Str::uuid7();
+            $model->gender ??= UserGender::Unknown;
+            $model->status ??= UserStatus::Normal;
         });
     }
 
