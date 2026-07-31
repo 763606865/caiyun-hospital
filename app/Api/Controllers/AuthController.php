@@ -4,6 +4,8 @@ namespace App\Api\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserAccount;
+use App\Services\UserAccountService;
 use Caiyun\Sms\Contracts\SmsSender;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,17 +28,17 @@ class AuthController extends Controller
     public function sendSmsCode(Request $request, SmsSender $sms): JsonResponse
     {
         $validated = $request->validate([
-            'mobile' => ['required', 'string', 'regex:/^1[3-9]\d{9}$/'],
+            'phone' => ['required', 'string', 'regex:/^1[3-9]\d{9}$/'],
         ]);
 
         $code = (string) random_int(100000, 999999);
 
-        $sms->send($validated['mobile'], 'verification_code', [
+        $sms->send($validated['phone'], 'verification_code', [
             'code' => $code,
         ]);
 
         Cache::put(
-            $this->smsCodeCacheKey($validated['mobile']),
+            $this->smsCodeCacheKey($validated['phone']),
             $code,
             self::SMS_CODE_TTL_SECONDS,
         );
@@ -57,12 +59,12 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'mobile' => ['required', 'string', 'regex:/^1[3-9]\d{9}$/'],
+            'phone' => ['required', 'string', 'regex:/^1[3-9]\d{9}$/'],
             'code' => ['required', 'string', 'size:6'],
             'device_name' => ['sometimes', 'string', 'max:100'],
         ]);
 
-        $cachedCode = Cache::pull($this->smsCodeCacheKey($validated['mobile']));
+        $cachedCode = Cache::pull($this->smsCodeCacheKey($validated['phone']));
 
         if (! is_string($cachedCode) || ! hash_equals($cachedCode, $validated['code'])) {
             throw ValidationException::withMessages([
@@ -71,10 +73,9 @@ class AuthController extends Controller
         }
 
         $user = User::query()->firstOrCreate(
-            ['mobile' => $validated['mobile']],
+            ['phone' => $validated['phone']],
             [
-                'name' => '用户'.substr($validated['mobile'], -4),
-                'email' => sprintf('%s@mobile.local', $validated['mobile']),
+                'nick_name' => '用户'.substr($validated['phone'], -4),
                 'password' => Str::password(32),
             ],
         );
@@ -85,6 +86,37 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'access_token' => $token,
             'user' => $this->userData($user),
+        ]);
+    }
+
+    /**
+     * 微信小程序手机号授权登录
+     *
+     * 手机号必须由服务端使用 phone_code 向微信获取，不接受客户端直接传入。
+     *
+     * POST /api/auth/wechat/login
+     */
+    public function wechatLogin(Request $request, UserAccountService $accounts): JsonResponse
+    {
+        $validated = $request->validate([
+            'login_code' => ['required', 'string', 'max:200'],
+            'phone_code' => ['required', 'string', 'max:200'],
+            'device_name' => ['sometimes', 'string', 'max:100'],
+        ]);
+
+        $result = $accounts->loginWithWechat(
+            $validated['login_code'],
+            $validated['phone_code'],
+        );
+        $token = $result['user']
+            ->createToken($validated['device_name'] ?? 'wechat-mini-program')
+            ->plainTextToken;
+
+        return response()->json([
+            'token_type' => 'Bearer',
+            'access_token' => $token,
+            'user' => $this->userData($result['user']),
+            'account' => $this->accountData($result['account']),
         ]);
     }
 
@@ -103,9 +135,9 @@ class AuthController extends Controller
         ]);
     }
 
-    private function smsCodeCacheKey(string $mobile): string
+    private function smsCodeCacheKey(string $phone): string
     {
-        return 'auth:sms-code:'.$mobile;
+        return 'auth:sms-code:'.$phone;
     }
 
     /**
@@ -115,10 +147,33 @@ class AuthController extends Controller
     {
         return [
             'id' => $user->id,
-            'name' => $user->name,
-            'mobile' => $user->mobile,
+            'uuid' => $user->uuid,
+            'real_name' => $user->real_name,
+            'nick_name' => $user->nick_name,
+            'phone' => $user->phone,
+            'avatar' => $user->avatar,
+            'gender' => $user->gender?->value,
+            'status' => $user->status->value,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
+        ];
+    }
+
+    /**
+     * 输出第三方账号的非敏感字段。
+     *
+     * @return array<string, mixed>
+     */
+    private function accountData(UserAccount $account): array
+    {
+        return [
+            'id' => $account->id,
+            'provider' => $account->provider,
+            'app_id' => $account->app_id,
+            'mobile' => $account->mobile,
+            'nickname' => $account->nickname,
+            'avatar_url' => $account->avatar_url,
+            'last_login_at' => $account->last_login_at,
         ];
     }
 }

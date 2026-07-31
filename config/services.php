@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'wechat' => [
+        'app_id' => env('WECHAT_MINI_PROGRAM_APP_ID'),
+        'app_secret' => env('WECHAT_MINI_PROGRAM_APP_SECRET'),
+        'base_url' => env('WECHAT_API_BASE_URL', 'https://api.weixin.qq.com'),
+    ],
+
 ];

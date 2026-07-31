@@ -14,7 +14,7 @@ class AuthTest extends TestCase
     public function test_it_sends_and_caches_an_sms_code(): void
     {
         $response = $this->postJson('/api/auth/sms-code', [
-            'mobile' => '13800138000',
+            'phone' => '13800138000',
         ]);
 
         $response
@@ -36,7 +36,7 @@ class AuthTest extends TestCase
         Cache::put('auth:sms-code:13800138000', '123456', 300);
 
         $response = $this->postJson('/api/auth/login', [
-            'mobile' => '13800138000',
+            'phone' => '13800138000',
             'code' => '123456',
             'device_name' => 'iPhone',
         ]);
@@ -44,10 +44,10 @@ class AuthTest extends TestCase
         $response
             ->assertOk()
             ->assertJsonPath('token_type', 'Bearer')
-            ->assertJsonPath('user.mobile', '13800138000')
+            ->assertJsonPath('user.phone', '13800138000')
             ->assertJsonStructure(['access_token']);
 
-        $this->assertDatabaseHas('users', ['mobile' => '13800138000']);
+        $this->assertDatabaseHas('users', ['phone' => '13800138000']);
         $this->assertDatabaseCount('users', 1);
         $this->assertDatabaseCount('personal_access_tokens', 1);
         $this->assertNull(Cache::get('auth:sms-code:13800138000'));
@@ -55,11 +55,11 @@ class AuthTest extends TestCase
 
     public function test_sms_login_reuses_an_existing_user(): void
     {
-        $user = User::factory()->create(['mobile' => '13800138000']);
+        $user = User::factory()->create(['phone' => '13800138000']);
         Cache::put('auth:sms-code:13800138000', '123456', 300);
 
         $response = $this->postJson('/api/auth/login', [
-            'mobile' => '13800138000',
+            'phone' => '13800138000',
             'code' => '123456',
         ]);
 
@@ -75,7 +75,7 @@ class AuthTest extends TestCase
         Cache::put('auth:sms-code:13800138000', '123456', 300);
 
         $this->postJson('/api/auth/login', [
-            'mobile' => '13800138000',
+            'phone' => '13800138000',
             'code' => '654321',
         ])
             ->assertUnprocessable()
@@ -86,14 +86,14 @@ class AuthTest extends TestCase
 
     public function test_an_authenticated_user_can_get_their_profile(): void
     {
-        $user = User::factory()->create(['mobile' => '13800138000']);
+        $user = User::factory()->create(['phone' => '13800138000']);
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withToken($token)
             ->getJson('/api/me')
             ->assertOk()
             ->assertJsonPath('user.id', $user->id)
-            ->assertJsonPath('user.mobile', '13800138000')
+            ->assertJsonPath('user.phone', '13800138000')
             ->assertJsonMissingPath('user.password')
             ->assertJsonMissingPath('user.email');
     }
