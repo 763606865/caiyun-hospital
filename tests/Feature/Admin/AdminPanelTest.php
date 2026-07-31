@@ -49,6 +49,8 @@ class AdminPanelTest extends TestCase
         $this->get('/admin/admin-roles')->assertOk();
         $this->get('/admin/users')->assertOk();
         $this->get('/admin/client-versions')->assertOk();
+        $this->get('/admin/system-settings')->assertOk();
+        $this->get('/admin/system-settings/create')->assertOk();
     }
 
     public function test_admin_create_command_creates_a_super_admin(): void
