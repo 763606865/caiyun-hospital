@@ -6,4 +6,5 @@ use App\Providers\AppServiceProvider;
 return [
     AppServiceProvider::class,
     AdminPanelProvider::class,
+    App\Libs\Oss\ServiceProvider::class,
 ];

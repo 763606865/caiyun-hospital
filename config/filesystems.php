@@ -60,6 +60,16 @@ return [
             'report' => false,
         ],
 
+        'oss' => [
+            'driver' => 'oss',
+            'access_key_id' => env('OSS_ACCESS_KEY_ID'),
+            'access_key_secret' => env('OSS_ACCESS_KEY_SECRET'),
+            'region' => env('OSS_DEFAULT_REGION', 'cn-hangzhou'),
+            'bucket' => env('OSS_BUCKET'),
+            'endpoint' => env('OSS_ENDPOINT', 'oss-cn-hangzhou.aliyuncs.com'),
+            'throw' => true,
+        ],
+
     ],
 
     /*

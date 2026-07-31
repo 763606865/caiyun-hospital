@@ -62,13 +62,14 @@ class AuthController extends Controller
             'code' => ['required', 'string', 'size:6'],
             'device_name' => ['sometimes', 'string', 'max:100'],
         ]);
+        if (config('auth.sms.valid_enabled')) {
+            $cachedCode = Cache::pull($this->smsCodeCacheKey($validated['phone']));
 
-        $cachedCode = Cache::pull($this->smsCodeCacheKey($validated['phone']));
-
-        if (! is_string($cachedCode) || ! hash_equals($cachedCode, $validated['code'])) {
-            throw ValidationException::withMessages([
-                'code' => ['验证码错误或已过期'],
-            ]);
+            if (! is_string($cachedCode) || ! hash_equals($cachedCode, $validated['code'])) {
+                throw ValidationException::withMessages([
+                    'code' => ['验证码错误或已过期'],
+                ]);
+            }
         }
 
         $user = User::query()->firstOrCreate(
