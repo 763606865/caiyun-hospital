@@ -79,6 +79,16 @@ class User extends Authenticatable
     }
 
     /**
+     * 用户使用过的客户端设备。
+     *
+     * @return HasMany<UserDevice, $this>
+     */
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class);
+    }
+
+    /**
      * 在标准 UUID 字符串与数据库二进制格式之间转换。
      *
      * @return Attribute<string|null, string|null>

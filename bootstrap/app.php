@@ -1,7 +1,9 @@
 <?php
 
 use App\Admin\Commands\CreateAdminUser;
+use App\Exceptions\ApiExceptionRenderer;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\RecordClientContext;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         CreateAdminUser::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->api(prepend: [
+            RecordClientContext::class,
+        ]);
+
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
@@ -28,4 +34,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(new ApiExceptionRenderer);
     })->create();

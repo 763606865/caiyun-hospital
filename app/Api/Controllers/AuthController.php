@@ -2,7 +2,6 @@
 
 namespace App\Api\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserAccount;
 use App\Services\UserAccountService;
@@ -43,7 +42,7 @@ class AuthController extends Controller
             self::SMS_CODE_TTL_SECONDS,
         );
 
-        return response()->json([
+        return $this->success([
             'message' => '验证码发送成功',
             'expires_in' => self::SMS_CODE_TTL_SECONDS,
         ]);
@@ -82,7 +81,7 @@ class AuthController extends Controller
 
         $token = $user->createToken($validated['device_name'] ?? 'api')->plainTextToken;
 
-        return response()->json([
+        return $this->success([
             'token_type' => 'Bearer',
             'access_token' => $token,
             'user' => $this->userData($user),
@@ -112,7 +111,7 @@ class AuthController extends Controller
             ->createToken($validated['device_name'] ?? 'wechat-mini-program')
             ->plainTextToken;
 
-        return response()->json([
+        return $this->success([
             'token_type' => 'Bearer',
             'access_token' => $token,
             'user' => $this->userData($result['user']),
@@ -130,7 +129,7 @@ class AuthController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        return response()->json([
+        return $this->success([
             'user' => $this->userData($user),
         ]);
     }

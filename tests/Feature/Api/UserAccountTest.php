@@ -60,11 +60,12 @@ class UserAccountTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonPath('token_type', 'Bearer')
-            ->assertJsonPath('user.phone', '13800138000')
-            ->assertJsonPath('account.provider', 'wechat')
-            ->assertJsonPath('account.mobile', '13800138000')
-            ->assertJsonStructure(['access_token']);
+            ->assertJsonPath('code', 200)
+            ->assertJsonPath('data.token_type', 'Bearer')
+            ->assertJsonPath('data.user.phone', '13800138000')
+            ->assertJsonPath('data.account.provider', 'wechat')
+            ->assertJsonPath('data.account.mobile', '13800138000')
+            ->assertJsonStructure(['data' => ['access_token'], 'meta']);
 
         $this->assertDatabaseHas('user_accounts', [
             'provider' => 'wechat',

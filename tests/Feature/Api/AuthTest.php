@@ -20,10 +20,13 @@ class AuthTest extends TestCase
         $response
             ->assertOk()
             ->assertJson([
-                'message' => '验证码发送成功',
-                'expires_in' => 300,
+                'code' => 200,
+                'data' => [
+                    'message' => '验证码发送成功',
+                    'expires_in' => 300,
+                ],
             ])
-            ->assertJsonMissingPath('code');
+            ->assertJsonStructure(['meta' => ['timestamp', 'response_time']]);
 
         $this->assertMatchesRegularExpression(
             '/^\d{6}$/',
@@ -43,9 +46,10 @@ class AuthTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonPath('token_type', 'Bearer')
-            ->assertJsonPath('user.phone', '13800138000')
-            ->assertJsonStructure(['access_token']);
+            ->assertJsonPath('code', 200)
+            ->assertJsonPath('data.token_type', 'Bearer')
+            ->assertJsonPath('data.user.phone', '13800138000')
+            ->assertJsonStructure(['data' => ['access_token'], 'meta']);
 
         $this->assertDatabaseHas('users', ['phone' => '13800138000']);
         $this->assertDatabaseCount('users', 1);
@@ -65,7 +69,7 @@ class AuthTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonPath('user.id', $user->id);
+            ->assertJsonPath('data.user.id', $user->id);
 
         $this->assertDatabaseCount('users', 1);
     }
@@ -79,6 +83,8 @@ class AuthTest extends TestCase
             'code' => '654321',
         ])
             ->assertUnprocessable()
+            ->assertJsonPath('code', 422)
+            ->assertJsonStructure(['message', 'errors' => ['code']])
             ->assertJsonValidationErrors('code');
 
         $this->assertDatabaseCount('users', 0);
@@ -92,14 +98,18 @@ class AuthTest extends TestCase
         $this->withToken($token)
             ->getJson('/api/me')
             ->assertOk()
-            ->assertJsonPath('user.id', $user->id)
-            ->assertJsonPath('user.phone', '13800138000')
-            ->assertJsonMissingPath('user.password')
-            ->assertJsonMissingPath('user.email');
+            ->assertJsonPath('data.user.id', $user->id)
+            ->assertJsonPath('data.user.phone', '13800138000')
+            ->assertJsonMissingPath('data.user.password')
+            ->assertJsonMissingPath('data.user.email');
     }
 
     public function test_me_requires_authentication(): void
     {
-        $this->getJson('/api/me')->assertUnauthorized();
+        $this->getJson('/api/me')
+            ->assertUnauthorized()
+            ->assertJsonPath('code', 401)
+            ->assertJsonStructure(['code', 'message'])
+            ->assertJsonMissingPath('data');
     }
 }
