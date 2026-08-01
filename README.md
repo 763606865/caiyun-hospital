@@ -13,22 +13,57 @@
 - ElasticSearch >= 9.0
 
 ## 快速初始化
-### 1) 安装后端依赖
+### 1) 配置 Laravel 目录权限
+
+Laravel 运行时需要 Web/PHP 进程能够写入 `bootstrap/cache` 和 `storage`。在 Linux 服务器上，先将目录所属组改为 PHP-FPM/Web 服务使用的用户组（Debian/Ubuntu 通常为 `www-data`，CentOS/RHEL 可能为 `nginx` 或 `apache`）：
+
+```bash
+sudo chown -R "$(whoami)":www-data bootstrap/cache storage
+sudo find bootstrap/cache storage -type d -exec chmod 775 {} \;
+sudo find bootstrap/cache storage -type f -exec chmod 664 {} \;
+```
+
+本地开发时，如果 Composer、PHP 和 Web 服务均以当前用户运行，通常只需执行：
+
+```bash
+chmod -R u+rwX bootstrap/cache storage
+```
+
+> 不要直接对整个项目执行 `chmod -R 777`。生产环境应让部署用户拥有文件、PHP-FPM/Web 服务用户组拥有组写权限；如果服务器使用 ACL、SELinux 或容器挂载卷，还需同步配置对应的写权限。
+
+若目录不存在（例如部署流程未保留 Git 中的空目录），可先创建 Laravel 常用运行时目录：
+
+```bash
+mkdir -p bootstrap/cache \
+  storage/app/public \
+  storage/framework/cache/data \
+  storage/framework/sessions \
+  storage/framework/views \
+  storage/logs
+```
+
+权限配置完成后，可验证当前用户是否能够写入：
+
+```bash
+test -w bootstrap/cache && test -w storage && echo "Laravel 目录可写"
+```
+
+### 2) 安装后端依赖
 ```bash
 composer install
 ```
 
-### 2) 生成应用密钥
+### 3) 生成应用密钥
 ```bash
 php artisan key:generate
 ```
 
-### 3) 执行数据库迁移
+### 4) 执行数据库迁移
 ```bash
 php artisan migrate
 ```
 
-### 4) 填充基础数据
+### 5) 填充基础数据
 ```bash
 php artisan db:seed
 ```
@@ -168,4 +203,3 @@ php artisan shield:generate --resource=YourResource --panel=admin --no-interacti
 # 3.生成超级管理员权限
 php artisan shield:super-admin --user=1 --panel=admin
 ```
-
