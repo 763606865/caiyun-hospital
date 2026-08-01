@@ -14,7 +14,7 @@
 
 ## 快速初始化
 
-CMS 项目完成依赖和环境变量配置后，推荐执行 `php artisan cms:install`。详细功能和 API 见 [CMS 使用说明](docs/CMS.md)。
+CMS 项目完成依赖和环境变量配置后，推荐执行 `php artisan cms:install`。详细功能和 API 见 [CMS 使用说明](docs/Api/CMS.md)。
 
 ### 1) 配置 Laravel 目录权限
 
