@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "43b838f786322d5c1180e9202972ba00",
+    "content-hash": "80bda7b05331e7ba2177172793168ada",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -326,8 +326,66 @@
             "time": "2026-06-14T18:21:03+00:00"
         },
         {
+            "name": "caiyun/license-client",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/763606865/caiyun-license-client.git",
+                "reference": "08fdcb976a805c73a8df0a485f101da0b680112c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/763606865/caiyun-license-client/zipball/08fdcb976a805c73a8df0a485f101da0b680112c",
+                "reference": "08fdcb976a805c73a8df0a485f101da0b680112c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-openssl": "*",
+                "illuminate/console": "^12.0|^13.0",
+                "illuminate/contracts": "^12.0|^13.0",
+                "illuminate/http": "^12.0|^13.0",
+                "illuminate/routing": "^12.0|^13.0",
+                "illuminate/support": "^12.0|^13.0",
+                "nesbot/carbon": "^3.0",
+                "php": "^8.3",
+                "symfony/http-foundation": "^7.2|^8.0",
+                "symfony/http-kernel": "^7.2|^8.0"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^10.0|^11.0",
+                "phpunit/phpunit": "^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Caiyun\\License\\LicenseServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Caiyun\\License\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "proprietary"
+            ],
+            "description": "Caiyun commercial license client for Laravel",
+            "support": {
+                "issues": "https://github.com/763606865/caiyun-license-client/issues",
+                "source": "https://github.com/763606865/caiyun-license-client/tree/v1.0.0"
+            },
+            "time": "2026-08-04T13:53:32+00:00"
+        },
+        {
             "name": "caiyun/sms",
-            "version": "dev-main",
+            "version": "dev-feat/souquan",
             "dist": {
                 "type": "path",
                 "url": "Libs/Sms",
