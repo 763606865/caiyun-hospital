@@ -6,6 +6,7 @@ use App\Enums\ClientPlatform;
 use App\Enums\ClientType;
 use App\Support\ClientVersionChecker;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $published_at 发布时间
  * @property Carbon|null $created_at 创建时间
  * @property Carbon|null $updated_at 更新时间
+ *
+ * @method static Builder<static> published() 只查询当前已发布的客户端版本
  */
 #[Table(name: 'client_versions')]
 #[Fillable([
@@ -51,7 +54,8 @@ class ClientVersion extends Model
      * @param  Builder<ClientVersion>  $query
      * @return Builder<ClientVersion>
      */
-    public function scopePublished(Builder $query): Builder
+    #[Scope]
+    protected function published(Builder $query): Builder
     {
         return $query
             ->where('is_published', true)

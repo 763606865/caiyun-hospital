@@ -23,6 +23,11 @@ use Illuminate\Support\Carbon;
  * @property int $upload_max_size_mb 单文件上传大小限制（MB）
  * @property bool $payment_enabled 是否启用支付配置
  * @property string|null $maintenance_message 维护模式提示文案
+ * @property string|null $seo_title SEO 标题
+ * @property string|null $seo_keywords SEO 关键词
+ * @property string|null $seo_description SEO 描述
+ * @property string|null $copyright 版权信息
+ * @property string|null $analytics_code 统计代码
  * @property Carbon|null $created_at 创建时间
  * @property Carbon|null $updated_at 更新时间
  */
