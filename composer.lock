@@ -327,16 +327,16 @@
         },
         {
             "name": "caiyun/license-client",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/763606865/caiyun-license-client.git",
-                "reference": "0faec58fc4017d6c29e7407c896719b40a5b68e5"
+                "reference": "2819522ec6911e1870a0c0cede8ee3dc2196b1aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/763606865/caiyun-license-client/zipball/0faec58fc4017d6c29e7407c896719b40a5b68e5",
-                "reference": "0faec58fc4017d6c29e7407c896719b40a5b68e5",
+                "url": "https://api.github.com/repos/763606865/caiyun-license-client/zipball/2819522ec6911e1870a0c0cede8ee3dc2196b1aa",
+                "reference": "2819522ec6911e1870a0c0cede8ee3dc2196b1aa",
                 "shasum": ""
             },
             "require": {
@@ -379,9 +379,9 @@
             "description": "Caiyun commercial license client for Laravel",
             "support": {
                 "issues": "https://github.com/763606865/caiyun-license-client/issues",
-                "source": "https://github.com/763606865/caiyun-license-client/tree/v1.0.3"
+                "source": "https://github.com/763606865/caiyun-license-client/tree/v1.0.4"
             },
-            "time": "2026-08-06T03:27:28+00:00"
+            "time": "2026-08-06T09:39:18+00:00"
         },
         {
             "name": "caiyun/sms",
