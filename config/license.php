@@ -23,6 +23,8 @@ return [
     'remote' => [
         'enabled' => env('LICENSE_REMOTE_ENABLED', false),
         'endpoint' => env('LICENSE_REMOTE_ENDPOINT'),
+        'client_id' => env('LICENSE_OPENAPI_CLIENT_ID'),
+        'client_secret' => env('LICENSE_OPENAPI_CLIENT_SECRET'),
         'project' => env('LICENSE_PROJECT', env('APP_NAME', 'cms')),
         'timeout' => (int) env('LICENSE_REMOTE_TIMEOUT', 5),
         'retries' => (int) env('LICENSE_REMOTE_RETRIES', 1),
