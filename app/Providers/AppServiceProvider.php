@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,5 +47,11 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+        if (app()->isProduction()) {
+            URL::useOrigin(config('app.url'));
+            if (config('app.https_enabled')) {
+                URL::forceScheme('https');
+            }
+        }
     }
 }
