@@ -27,3 +27,6 @@ Homestead.yaml
 Thumbs.db
 /.supervisor.local/
 /bootstrap/cache/
+/resources/js/actions/
+/resources/js/routes/
+/resources/js/wayfinder/
