@@ -46,7 +46,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('status_code')->comment('HTTP 响应状态码');
             $table->unsignedInteger('duration_ms')->comment('服务端处理耗时，毫秒');
             $table->string('ip', 45)->nullable()->comment('请求 IP');
-            $table->timestamp('requested_at')->comment('请求时间');
+            $table->timestamp('requested_at')->nullable()->comment('请求时间');
 
             $table->index('request_id');
             $table->index(['user_id', 'requested_at']);
