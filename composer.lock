@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f006973ae829c40bc61fa2a5fe4239ab",
+    "content-hash": "f2bdbd8428f11fb4ff516569639b83f7",
     "packages": [
         {
             "name": "aliyuncs/oss-sdk-php",
@@ -327,16 +327,11 @@
         },
         {
             "name": "caiyun/license-client",
-            "version": "v1.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/763606865/caiyun-license-client.git",
-                "reference": "2819522ec6911e1870a0c0cede8ee3dc2196b1aa"
-            },
+            "version": "v2.0.0",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/763606865/caiyun-license-client/zipball/2819522ec6911e1870a0c0cede8ee3dc2196b1aa",
-                "reference": "2819522ec6911e1870a0c0cede8ee3dc2196b1aa",
+                "url": "https://mirrors.cloud.tencent.com/repository/composer/caiyun/license-client/v2.0.0/caiyun-license-client-v2.0.0.zip",
+                "reference": "ddc5eaf25856cf07154aec65f830abc221ba19d4",
                 "shasum": ""
             },
             "require": {
@@ -372,16 +367,15 @@
                     "Caiyun\\License\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "proprietary"
             ],
             "description": "Caiyun commercial license client for Laravel",
             "support": {
                 "issues": "https://github.com/763606865/caiyun-license-client/issues",
-                "source": "https://github.com/763606865/caiyun-license-client/tree/v1.0.4"
+                "source": "https://github.com/763606865/caiyun-license-client/tree/v2.0.0"
             },
-            "time": "2026-08-06T09:39:18+00:00"
+            "time": "2026-09-04T02:22:02+00:00"
         },
         {
             "name": "caiyun/sms",
