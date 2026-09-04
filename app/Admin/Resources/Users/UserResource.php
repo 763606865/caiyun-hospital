@@ -5,6 +5,7 @@ namespace App\Admin\Resources\Users;
 use App\Admin\Resources\Users\Pages\CreateUser;
 use App\Admin\Resources\Users\Pages\EditUser;
 use App\Admin\Resources\Users\Pages\ListUsers;
+use App\Admin\Resources\Users\RelationManagers\PatientsRelationManager;
 use App\Admin\Resources\Users\Schemas\UserForm;
 use App\Admin\Resources\Users\Tables\UsersTable;
 use App\Models\User;
@@ -13,6 +14,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class UserResource extends Resource
 {
@@ -20,15 +24,17 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?string $navigationLabel = '用户管理';
+    protected static ?string $navigationLabel = '前台用户';
 
-    protected static ?string $modelLabel = '用户';
+    protected static ?string $modelLabel = '前台用户';
 
-    protected static ?string $pluralModelLabel = '用户';
+    protected static ?string $pluralModelLabel = '前台用户';
 
-    protected static ?int $navigationSort = 10;
+    protected static string|UnitEnum|null $navigationGroup = '患者中心';
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $recordTitleAttribute = 'phone';
 
     public static function form(Schema $schema): Schema
     {
@@ -43,8 +49,13 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PatientsRelationManager::class,
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withoutGlobalScopes([SoftDeletingScope::class]);
     }
 
     public static function getPages(): array

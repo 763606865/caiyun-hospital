@@ -36,4 +36,24 @@ class UserPolicy
     {
         return $admin->can('users.delete');
     }
+
+    public function restore(AdminUser $admin, User $user): bool
+    {
+        return $admin->can('users.delete');
+    }
+
+    public function restoreAny(AdminUser $admin): bool
+    {
+        return $admin->can('users.delete');
+    }
+
+    public function forceDelete(AdminUser $admin, User $user): bool
+    {
+        return $admin->can('users.delete');
+    }
+
+    public function forceDeleteAny(AdminUser $admin): bool
+    {
+        return $admin->can('users.delete');
+    }
 }

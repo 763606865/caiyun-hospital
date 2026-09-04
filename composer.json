@@ -34,6 +34,7 @@
         "laravel/scout": "^11.4",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
+        "phpoffice/phpspreadsheet": "^5.0",
         "spatie/laravel-permission": "^8.0",
         "yansongda/pay": "^3.7"
     },

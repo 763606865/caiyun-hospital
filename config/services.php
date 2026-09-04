@@ -41,4 +41,12 @@ return [
         'base_url' => env('WECHAT_API_BASE_URL', 'https://api.weixin.qq.com'),
     ],
 
+    'amap' => [
+        'web_key' => env('AMAP_WEB_KEY'),
+        'security_js_code' => env('AMAP_SECURITY_JS_CODE'),
+        'default_longitude' => (float) env('AMAP_DEFAULT_LONGITUDE', 116.397428),
+        'default_latitude' => (float) env('AMAP_DEFAULT_LATITUDE', 39.90923),
+        'default_zoom' => (int) env('AMAP_DEFAULT_ZOOM', 15),
+    ],
+
 ];
