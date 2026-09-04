@@ -9,12 +9,9 @@ use Illuminate\Http\JsonResponse;
 
 abstract class Controller
 {
-    /**
-     * @throws \Exception
-     */
-    protected function success(mixed $data = []): JsonResponse
+    protected function success(mixed $data = [], int $status = 200): JsonResponse
     {
-        return ApiResponse::success($data);
+        return ApiResponse::success($data, $status);
     }
 
     /**

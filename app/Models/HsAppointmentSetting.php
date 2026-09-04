@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  */
 #[Table(name: 'hs_appointment_settings')]
 #[Fillable([
-    'registration_enabled', 'advance_days', 'cancel_hours_before',
+    'key', 'registration_enabled', 'advance_days', 'cancel_hours_before',
     'no_show_limit', 'no_show_ban_days', 'notice',
 ])]
 class HsAppointmentSetting extends Model
