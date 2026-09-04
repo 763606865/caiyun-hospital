@@ -4,6 +4,7 @@ namespace App\Admin\Imports;
 
 use App\Models\HsCampus;
 use App\Models\HsDepartment;
+use App\Models\HsDepartmentCategory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -377,6 +378,20 @@ abstract class CsvImporter
             ->orderBy('sort')
             ->get(['name', 'slug'])
             ->map(fn ($department): string => "{$department->name} [{$department->slug}]")
+            ->all();
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected static function departmentCategoryDropdownLabels(): array
+    {
+        return HsDepartmentCategory::query()
+            ->enabled()
+            ->orderBy('sort')
+            ->orderBy('id')
+            ->get(['name', 'slug'])
+            ->map(fn (HsDepartmentCategory $category): string => "{$category->name} [{$category->slug}]")
             ->all();
     }
 

@@ -3,6 +3,7 @@
 namespace App\Services\Hospital;
 
 use App\Enums\HsAppointmentStatus;
+use App\Enums\HsSchedulePeriod;
 use App\Enums\HsScheduleStatus;
 use App\Exceptions\ConflictException;
 use App\Exceptions\InvalidArgumentException;
@@ -10,6 +11,7 @@ use App\Models\HsAppointment;
 use App\Models\HsAppointmentSetting;
 use App\Models\HsPatient;
 use App\Models\HsQuota;
+use App\Models\HsSchedule;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
@@ -78,9 +80,11 @@ class AppointmentBookingService
             $quota->save();
 
             $fee = $schedule->fee ?? $schedule->doctor?->fee ?? 0;
+            $appointmentNo = $this->generateAppointmentNo();
+            $ticketNo = $this->nextTicketNo($schedule);
 
             return HsAppointment::query()->create([
-                'appointment_no' => $this->generateAppointmentNo(),
+                'appointment_no' => $appointmentNo,
                 'user_id' => $user->id,
                 'patient_id' => $patientId,
                 'campus_id' => $schedule->campus_id,
@@ -93,6 +97,8 @@ class AppointmentBookingService
                 'start_time' => $quota->start_time,
                 'end_time' => $quota->end_time,
                 'fee' => $fee,
+                'ticket_no' => $ticketNo,
+                'voucher_code' => $appointmentNo,
                 'status' => HsAppointmentStatus::Pending,
                 'remark' => $remark,
             ]);
@@ -190,5 +196,25 @@ class AppointmentBookingService
     protected function generateAppointmentNo(): string
     {
         return 'AP'.now()->format('YmdHis').Str::upper(Str::random(4));
+    }
+
+    /**
+     * 按排班生成取号号码（同排班递增）。
+     */
+    protected function nextTicketNo(HsSchedule $schedule): string
+    {
+        $prefix = match ($schedule->period) {
+            HsSchedulePeriod::Morning => 'A',
+            HsSchedulePeriod::Afternoon => 'B',
+            HsSchedulePeriod::Evening => 'C',
+            default => 'A',
+        };
+
+        $seq = HsAppointment::query()
+            ->where('schedule_id', $schedule->id)
+            ->where('status', '!=', HsAppointmentStatus::Cancelled)
+            ->count() + 1;
+
+        return $prefix.'-'.str_pad((string) $seq, 2, '0', STR_PAD_LEFT);
     }
 }

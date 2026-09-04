@@ -4,6 +4,7 @@ namespace App\Admin\Imports;
 
 use App\Models\HsCampus;
 use App\Models\HsDepartment;
+use App\Models\HsDepartmentCategory;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -13,6 +14,7 @@ class HsDepartmentCsvImporter extends CsvImporter
     {
         return [
             '院区',
+            '分类',
             '科室名称',
             'Slug',
             '简介',
@@ -27,10 +29,13 @@ class HsDepartmentCsvImporter extends CsvImporter
     public static function exampleRows(): array
     {
         $campus = static::campusDropdownLabels()[0] ?? '主院区 [main]';
+        $categories = static::departmentCategoryDropdownLabels();
+        $internal = $categories[0] ?? '内科系 [internal]';
+        $surgery = $categories[1] ?? $internal;
 
         return [
-            [$campus, '心内科', 'cardiology', '心血管疾病诊治', '冠心病,高血压', '科室详细介绍…', '门诊楼3楼', 10, '是'],
-            [$campus, '神经内科', 'neurology', '神经系统疾病诊治', '脑卒中,头痛', '科室详细介绍…', '门诊楼4楼', 20, '是'],
+            [$campus, $internal, '心内科', 'cardiology', '心血管疾病诊治', '冠心病,高血压', '科室详细介绍…', '门诊楼3楼', 10, '是'],
+            [$campus, $surgery, '神经内科', 'neurology', '神经系统疾病诊治', '脑卒中,头痛', '科室详细介绍…', '门诊楼4楼', 20, '是'],
         ];
     }
 
@@ -42,9 +47,11 @@ class HsDepartmentCsvImporter extends CsvImporter
     public static function dropdownOptions(): array
     {
         $campuses = static::campusDropdownLabels();
+        $categories = static::departmentCategoryDropdownLabels();
 
         return [
             '院区' => $campuses !== [] ? $campuses : ['请先在后台创建院区'],
+            '分类' => $categories !== [] ? $categories : ['请先在后台创建科室分类'],
             '是否启用' => static::booleanOptions(),
         ];
     }
@@ -56,6 +63,7 @@ class HsDepartmentCsvImporter extends CsvImporter
     protected function importRow(array $row, int $line): array
     {
         $campusSlug = $this->extractSlug($row['院区'] ?? ($row['院区Slug'] ?? ''));
+        $categorySlug = $this->extractSlug($row['分类'] ?? ($row['分类Slug'] ?? ''));
         $name = $row['科室名称'] ?? '';
         $slug = $row['Slug'] ?? '';
 
@@ -73,8 +81,17 @@ class HsDepartmentCsvImporter extends CsvImporter
             return ["第 {$line} 行：院区「{$campusSlug}」不存在，请先在院区管理中创建。"];
         }
 
+        $categoryId = null;
+        if ($categorySlug !== '') {
+            $category = HsDepartmentCategory::query()->where('slug', $categorySlug)->first();
+            if (! $category) {
+                return ["第 {$line} 行：分类「{$categorySlug}」不存在，请先在科室分类中创建。"];
+            }
+            $categoryId = $category->id;
+        }
+
         try {
-            DB::transaction(function () use ($row, $campus, $name, $slug): void {
+            DB::transaction(function () use ($row, $campus, $categoryId, $name, $slug): void {
                 $department = HsDepartment::withTrashed()->firstOrNew(['slug' => $slug]);
 
                 if ($department->trashed()) {
@@ -83,6 +100,7 @@ class HsDepartmentCsvImporter extends CsvImporter
 
                 $department->fill([
                     'campus_id' => $campus->id,
+                    'category_id' => $categoryId,
                     'name' => $name,
                     'summary' => ($row['简介'] ?? '') !== '' ? $row['简介'] : null,
                     'specialties' => ($row['擅长方向'] ?? '') !== '' ? $row['擅长方向'] : null,

@@ -5,14 +5,16 @@ namespace App\Admin\Resources\HsSchedules;
 use App\Admin\Resources\HsSchedules\Pages\CreateHsSchedule;
 use App\Admin\Resources\HsSchedules\Pages\EditHsSchedule;
 use App\Admin\Resources\HsSchedules\Pages\ListHsSchedules;
-use App\Admin\Resources\HsSchedules\RelationManagers\QuotasRelationManager;
+use App\Admin\Resources\HsSchedules\Pages\ManageHsScheduleQuotas;
 use App\Admin\Support\EnumOptions;
 use App\Enums\HsSchedulePeriod;
 use App\Enums\HsScheduleStatus;
+use App\Enums\HsVisitType;
 use App\Models\HsDepartment;
 use App\Models\HsDoctor;
 use App\Models\HsSchedule;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -97,6 +99,10 @@ class HsScheduleResource extends Resource
                     ->options(EnumOptions::from(HsSchedulePeriod::cases()))
                     ->required()
                     ->default(HsSchedulePeriod::Morning->value),
+                Select::make('visit_type')->label('号别')
+                    ->options(EnumOptions::from(HsVisitType::cases()))
+                    ->required()
+                    ->default(HsVisitType::Normal->value),
                 TextInput::make('room')->label('诊室')->maxLength(100),
                 TextInput::make('total_quota')->label('号源总量')->numeric()->default(0)->required(),
                 TextInput::make('fee')->label('本次挂号费')->numeric()->prefix('¥')
@@ -114,6 +120,7 @@ class HsScheduleResource extends Resource
         return $table->defaultSort('schedule_date', 'desc')->columns([
             TextColumn::make('schedule_date')->label('日期')->date()->sortable(),
             TextColumn::make('period')->label('午别')->formatStateUsing(fn (HsSchedulePeriod $state) => $state->label()),
+            TextColumn::make('visit_type')->label('号别')->formatStateUsing(fn (HsVisitType $state) => $state->label()),
             TextColumn::make('doctor.name')->label('医生')->searchable()->sortable(),
             TextColumn::make('department.name')->label('科室')->searchable(),
             TextColumn::make('campus.name')->label('院区')->toggleable(),
@@ -134,6 +141,11 @@ class HsScheduleResource extends Resource
             SelectFilter::make('period')->label('午别')->options(EnumOptions::from(HsSchedulePeriod::cases())),
             TrashedFilter::make(),
         ])->recordActions([
+            Action::make('quotas')
+                ->label('号源')
+                ->icon(Heroicon::OutlinedTicket)
+                ->url(fn (HsSchedule $record): string => static::getUrl('quotas', ['record' => $record]))
+                ->visible(fn (): bool => (bool) auth('admin')->user()?->can('quotas.view')),
             EditAction::make(),
             DeleteAction::make(),
             RestoreAction::make(),
@@ -147,13 +159,6 @@ class HsScheduleResource extends Resource
         ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            QuotasRelationManager::class,
-        ];
-    }
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->withoutGlobalScopes([SoftDeletingScope::class]);
@@ -165,6 +170,7 @@ class HsScheduleResource extends Resource
             'index' => ListHsSchedules::route('/'),
             'create' => CreateHsSchedule::route('/create'),
             'edit' => EditHsSchedule::route('/{record}/edit'),
+            'quotas' => ManageHsScheduleQuotas::route('/{record}/quotas'),
         ];
     }
 }

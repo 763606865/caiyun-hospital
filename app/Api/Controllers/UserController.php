@@ -145,6 +145,7 @@ class UserController extends Controller
             'gender' => $user->gender?->value,
             'email' => $user->email,
             'status' => $user->status->value,
+            'is_verified' => filled($user->real_name),
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ];

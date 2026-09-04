@@ -154,6 +154,7 @@ class AuthController extends Controller
             'avatar' => $user->avatar,
             'gender' => $user->gender?->value,
             'status' => $user->status->value,
+            'is_verified' => filled($user->real_name),
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
         ];

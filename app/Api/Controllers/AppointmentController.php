@@ -23,24 +23,50 @@ class AppointmentController extends Controller
     /**
      * 当前用户的预约单分页列表。
      *
+     * 支持就诊人筛选与就诊页 Tab：pending/ticket/waiting/completed。
+     *
      * GET /api/appointments
      */
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'status' => ['nullable', Rule::enum(HsAppointmentStatus::class)],
+            'patient_id' => ['nullable', 'integer', 'min:1'],
+            'tab' => ['nullable', Rule::in(['pending', 'ticket', 'waiting', 'completed', 'payment'])],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
+
+        // 待缴费依赖 HIS/支付，本地闭环暂无空列表
+        if (($validated['tab'] ?? null) === 'payment') {
+            return $this->success([
+                'data' => [],
+                'current_page' => 1,
+                'last_page' => 1,
+                'per_page' => $validated['per_page'] ?? 15,
+                'total' => 0,
+            ]);
+        }
 
         $appointments = HsAppointment::query()
             ->where('user_id', $this->user()->id)
             ->with([
-                'patient:id,name,phone,id_type,id_number',
+                'patient:id,name,phone,id_type,id_number,relation',
                 'doctor:id,name,slug,title,avatar',
-                'department:id,name,slug',
-                'campus:id,name,slug,address',
+                'department:id,name,slug,location',
+                'campus:id,name,slug,address,latitude,longitude',
+                'schedule:id,room,visit_type,status',
             ])
+            ->when($validated['patient_id'] ?? null, fn ($query, $patientId) => $query->where('patient_id', $patientId))
             ->when($validated['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
+            ->when($validated['tab'] ?? null, function ($query, string $tab): void {
+                match ($tab) {
+                    'pending' => $query->where('status', HsAppointmentStatus::Pending),
+                    'ticket' => $query->where('status', HsAppointmentStatus::Pending)->whereNull('checked_in_at'),
+                    'waiting' => $query->where('status', HsAppointmentStatus::Pending)->whereNotNull('checked_in_at'),
+                    'completed' => $query->where('status', HsAppointmentStatus::Completed),
+                    default => null,
+                };
+            })
             ->orderByDesc('appointment_date')
             ->orderByDesc('id')
             ->paginate($validated['per_page'] ?? 15);
@@ -73,9 +99,10 @@ class AppointmentController extends Controller
         $appointment->load([
             'patient:id,name,phone',
             'doctor:id,name,slug,title,avatar',
-            'department:id,name,slug',
+            'department:id,name,slug,location',
             'campus:id,name,slug,address',
             'quota:id,start_time,end_time,remaining',
+            'schedule:id,room,visit_type',
         ]);
 
         return $this->success($appointment, 201);
@@ -93,8 +120,8 @@ class AppointmentController extends Controller
             'patient:id,name,phone,id_type,id_number,relation',
             'doctor:id,name,slug,title,avatar,fee',
             'department:id,name,slug,location',
-            'campus:id,name,slug,address,phone',
-            'schedule:id,schedule_date,period,room,status',
+            'campus:id,name,slug,address,phone,latitude,longitude',
+            'schedule:id,schedule_date,period,room,status,visit_type',
             'quota:id,start_time,end_time',
         ]);
 

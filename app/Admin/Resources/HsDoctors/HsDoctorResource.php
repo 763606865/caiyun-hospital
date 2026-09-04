@@ -5,6 +5,7 @@ namespace App\Admin\Resources\HsDoctors;
 use App\Admin\Resources\HsDoctors\Pages\CreateHsDoctor;
 use App\Admin\Resources\HsDoctors\Pages\EditHsDoctor;
 use App\Admin\Resources\HsDoctors\Pages\ListHsDoctors;
+use App\Admin\Resources\HsDoctors\RelationManagers\ScheduleTemplatesRelationManager;
 use App\Models\HsDepartment;
 use App\Models\HsDoctor;
 use BackedEnum;
@@ -52,7 +53,7 @@ class HsDoctorResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = '医院主数据';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -116,7 +117,7 @@ class HsDoctorResource extends Resource
             SelectFilter::make('departments')->label('科室')->relationship('departments', 'name')->multiple()->preload(),
             TrashedFilter::make(),
         ])->recordActions([
-            EditAction::make(),
+            EditAction::make()->label('配置'),
             DeleteAction::make(),
             RestoreAction::make(),
             ForceDeleteAction::make(),
@@ -127,6 +128,13 @@ class HsDoctorResource extends Resource
                 ForceDeleteBulkAction::make(),
             ]),
         ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            ScheduleTemplatesRelationManager::class,
+        ];
     }
 
     public static function getEloquentQuery(): Builder

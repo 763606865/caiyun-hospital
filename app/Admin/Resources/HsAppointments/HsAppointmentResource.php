@@ -6,13 +6,13 @@ use App\Admin\Resources\HsAppointments\Pages\CreateHsAppointment;
 use App\Admin\Resources\HsAppointments\Pages\EditHsAppointment;
 use App\Admin\Resources\HsAppointments\Pages\ListHsAppointments;
 use App\Admin\Resources\HsPatients\HsPatientResource;
-use App\Admin\Resources\HsQuotas\HsQuotaResource;
 use App\Admin\Support\EnumOptions;
 use App\Enums\HsAppointmentStatus;
 use App\Enums\HsSchedulePeriod;
 use App\Models\HsAppointment;
 use App\Models\HsPatient;
 use App\Models\HsQuota;
+use App\Models\HsSchedule;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -94,7 +94,7 @@ class HsAppointmentResource extends Resource
                         ->limit(200)
                         ->get()
                         ->mapWithKeys(fn (HsQuota $quota): array => [
-                            $quota->id => HsQuotaResource::scheduleLabel($quota->schedule).' '.$quota->start_time.'-'.$quota->end_time,
+                            $quota->id => ($quota->schedule?->adminLabel() ?? '排班').' '.$quota->start_time.'-'.$quota->end_time,
                         ])
                         ->all())
                     ->searchable()
@@ -128,6 +128,8 @@ class HsAppointmentResource extends Resource
                 TimePicker::make('start_time')->label('时段开始')->seconds(false),
                 TimePicker::make('end_time')->label('时段结束')->seconds(false),
                 TextInput::make('fee')->label('挂号费')->numeric()->prefix('¥')->default(0)->required(),
+                TextInput::make('ticket_no')->label('取号号码')->maxLength(32)->placeholder('如 A-12'),
+                TextInput::make('voucher_code')->label('凭证码')->maxLength(64)->helperText('二维码内容，默认可用预约单号'),
                 Textarea::make('remark')->label('备注')->rows(2)->columnSpanFull(),
             ]),
             Section::make('状态')->columnSpan(1)->schema([
@@ -142,12 +144,13 @@ class HsAppointmentResource extends Resource
                     ->visible(fn (Get $get): bool => $get('status') === HsAppointmentStatus::Cancelled->value),
                 DateTimePicker::make('completed_at')->label('完成时间')->seconds(false)
                     ->visible(fn (Get $get): bool => $get('status') === HsAppointmentStatus::Completed->value),
+                DateTimePicker::make('checked_in_at')->label('取号/报到时间')->seconds(false),
                 DateTimePicker::make('notified_at')->label('最近通知时间')->seconds(false),
                 Select::make('campus_id')->label('院区')->relationship('campus', 'name')->disabled()->dehydrated(),
                 Select::make('department_id')->label('科室')->relationship('department', 'name')->disabled()->dehydrated(),
                 Select::make('doctor_id')->label('医生')->relationship('doctor', 'name')->disabled()->dehydrated(),
                 Select::make('schedule_id')->label('排班')->relationship('schedule', 'id')->disabled()->dehydrated()
-                    ->getOptionLabelFromRecordUsing(fn ($record) => HsQuotaResource::scheduleLabel($record)),
+                    ->getOptionLabelFromRecordUsing(fn (HsSchedule $record): string => $record->adminLabel()),
             ]),
         ]);
     }
@@ -160,6 +163,7 @@ class HsAppointmentResource extends Resource
             TextColumn::make('doctor.name')->label('医生')->searchable(),
             TextColumn::make('department.name')->label('科室'),
             TextColumn::make('appointment_date')->label('就诊日')->date()->sortable(),
+            TextColumn::make('ticket_no')->label('取号')->toggleable(),
             TextColumn::make('period')->label('午别')->formatStateUsing(fn (HsSchedulePeriod $state) => $state->label()),
             TextColumn::make('start_time')->label('时段')->formatStateUsing(
                 fn ($state, HsAppointment $record): string => trim(($record->start_time ?? '').'-'.($record->end_time ?? ''), '-')

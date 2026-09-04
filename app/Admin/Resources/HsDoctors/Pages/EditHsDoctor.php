@@ -9,6 +9,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
 /**
  * @property-read HsDoctor $record
@@ -44,6 +45,21 @@ class EditHsDoctor extends EditRecord
     protected function afterSave(): void
     {
         $this->syncPrimaryDepartment();
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return '配置 · '.$this->getRecordTitle();
+    }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
+
+    public function getContentTabLabel(): ?string
+    {
+        return '基本信息';
     }
 
     protected function getHeaderActions(): array

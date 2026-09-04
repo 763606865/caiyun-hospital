@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\HsSchedulePeriod;
 use App\Enums\HsScheduleStatus;
+use App\Enums\HsVisitType;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -24,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property int $doctor_id 出诊医生 ID
  * @property Carbon $schedule_date 出诊日期
  * @property HsSchedulePeriod $period 午别
+ * @property HsVisitType $visit_type 号别
  * @property string|null $room 诊室
  * @property int $total_quota 当日该午别号源总量
  * @property HsScheduleStatus $status 状态
@@ -41,7 +43,7 @@ use Illuminate\Support\Carbon;
  */
 #[Table(name: 'hs_schedules')]
 #[Fillable([
-    'campus_id', 'department_id', 'doctor_id', 'schedule_date', 'period',
+    'campus_id', 'department_id', 'doctor_id', 'schedule_date', 'period', 'visit_type',
     'room', 'total_quota', 'status', 'fee',
 ])]
 class HsSchedule extends Model
@@ -51,6 +53,7 @@ class HsSchedule extends Model
     /** @var array<string, mixed> */
     protected $attributes = [
         'status' => HsScheduleStatus::Normal->value,
+        'visit_type' => HsVisitType::Normal->value,
         'total_quota' => 0,
     ];
 
@@ -60,6 +63,7 @@ class HsSchedule extends Model
         return [
             'schedule_date' => 'date',
             'period' => HsSchedulePeriod::class,
+            'visit_type' => HsVisitType::class,
             'status' => HsScheduleStatus::class,
             'fee' => 'decimal:2',
         ];
@@ -87,6 +91,19 @@ class HsSchedule extends Model
     public function quotas(): HasMany
     {
         return $this->hasMany(HsQuota::class, 'schedule_id')->orderBy('sort');
+    }
+
+    /**
+     * 后台展示用短标签：日期 午别 · 医生 · 科室。
+     */
+    public function adminLabel(): string
+    {
+        $date = $this->schedule_date?->format('Y-m-d') ?? '-';
+        $period = $this->period?->label() ?? '-';
+        $doctor = $this->doctor?->name ?? '-';
+        $department = $this->department?->name ?? '-';
+
+        return "{$date} {$period} · {$doctor} · {$department}";
     }
 
     /** @return HasMany<HsAppointment, $this> */

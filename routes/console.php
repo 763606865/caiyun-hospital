@@ -2,6 +2,8 @@
 
 use App\Enums\ContentStatus;
 use App\Models\Content;
+use Illuminate\Foundation\Inspiring;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::call(function (): void {
@@ -11,8 +13,11 @@ Schedule::call(function (): void {
         ->update(['status' => ContentStatus::Offline]);
 })->everyMinute()->name('cms:publish-scheduled')->withoutOverlapping();
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+// 按预约规则提前放号天数，滚动补齐未来窗口内的出诊排班与号源
+Schedule::command('hospital:generate-schedules')
+    ->dailyAt('00:30')
+    ->name('hospital:generate-schedules')
+    ->withoutOverlapping();
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());

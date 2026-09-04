@@ -10,6 +10,7 @@ use App\Api\Controllers\DeviceController;
 use App\Api\Controllers\FileController;
 use App\Api\Controllers\HospitalController;
 use App\Api\Controllers\PatientController;
+use App\Api\Controllers\PatientOverviewController;
 use App\Api\Controllers\SystemSettingController;
 use App\Api\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -31,8 +32,10 @@ Route::prefix('cms')->middleware('throttle:120,1')->group(function (): void {
 });
 
 Route::prefix('hospital')->middleware('throttle:120,1')->group(function (): void {
+    Route::get('/home', [HospitalController::class, 'home']);
     Route::get('/campuses', [HospitalController::class, 'campuses']);
     Route::get('/campuses/{slug}', [HospitalController::class, 'campus']);
+    Route::get('/department-categories', [HospitalController::class, 'departmentCategories']);
     Route::get('/departments', [HospitalController::class, 'departments']);
     Route::get('/departments/{slug}', [HospitalController::class, 'department']);
     Route::get('/doctors', [HospitalController::class, 'doctors']);
@@ -52,6 +55,7 @@ Route::middleware('auth:api')->group(function (): void {
     // ==============================================================================
     // 认证相关
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/me/overview', PatientOverviewController::class);
     // ==============================================================================
     // 用户资料
     Route::patch('/user', [UserController::class, 'update']);

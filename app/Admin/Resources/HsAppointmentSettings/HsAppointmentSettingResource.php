@@ -34,7 +34,7 @@ class HsAppointmentSettingResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = '就诊服务';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'key';
 

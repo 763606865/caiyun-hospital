@@ -50,7 +50,7 @@ class HsDepartmentResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = '医院主数据';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -59,6 +59,11 @@ class HsDepartmentResource extends Resource
         return $schema->columns(3)->components([
             Section::make('基本信息')->columnSpan(2)->columns(2)->schema([
                 Select::make('campus_id')->label('所属院区')->relationship('campus', 'name')->searchable()->preload()->required(),
+                Select::make('category_id')->label('科室分类')
+                    ->relationship('category', 'name', fn (Builder $query) => $query->where('is_enabled', true)->orderBy('sort'))
+                    ->searchable()
+                    ->preload()
+                    ->helperText('挂号页左侧分组，请先在「科室分类」中维护'),
                 TextInput::make('name')->label('名称')->required()->maxLength(255)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn ($state, $set, $record) => $record ?: $set('slug', self::makeSlug((string) $state))),
@@ -71,6 +76,8 @@ class HsDepartmentResource extends Resource
             Section::make('展示')->columnSpan(1)->schema([
                 FileUpload::make('cover')->label('封面')->disk('public')->directory('hospital/departments')->image()->imageEditor(),
                 TextInput::make('sort')->label('排序')->numeric()->default(0)->required(),
+                Toggle::make('is_featured')->label('常挂科室')->default(false)
+                    ->helperText('首页「常挂科室」展示'),
                 Toggle::make('is_enabled')->label('启用')->default(true),
             ]),
         ]);
@@ -81,14 +88,17 @@ class HsDepartmentResource extends Resource
         return $table->defaultSort('sort')->columns([
             ImageColumn::make('cover')->label('封面')->disk('public')->circular(),
             TextColumn::make('name')->label('名称')->searchable()->sortable(),
+            TextColumn::make('category.name')->label('分类')->toggleable(),
             TextColumn::make('campus.name')->label('院区')->sortable(),
             TextColumn::make('location')->label('位置')->toggleable(),
             TextColumn::make('doctors_count')->label('医生数')->counts('doctors'),
+            IconColumn::make('is_featured')->label('常挂')->boolean()->toggleable(),
             IconColumn::make('is_enabled')->label('启用')->boolean(),
             TextColumn::make('sort')->label('排序')->sortable(),
             TextColumn::make('updated_at')->label('更新时间')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
         ])->filters([
             SelectFilter::make('campus_id')->label('院区')->relationship('campus', 'name'),
+            SelectFilter::make('category_id')->label('分类')->relationship('category', 'name'),
             TrashedFilter::make(),
         ])->recordActions([
             EditAction::make(),

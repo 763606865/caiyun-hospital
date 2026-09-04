@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Admin\Resources\HsSchedules\RelationManagers;
+namespace App\Admin\Resources\HsSchedules\Pages;
 
+use App\Admin\Resources\HsSchedules\HsScheduleResource;
+use App\Models\HsSchedule;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -10,19 +12,32 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 
-class QuotasRelationManager extends RelationManager
+class ManageHsScheduleQuotas extends ManageRelatedRecords
 {
+    protected static string $resource = HsScheduleResource::class;
+
     protected static string $relationship = 'quotas';
 
-    protected static ?string $title = '号源时段';
+    protected static ?string $relationshipTitle = '号源';
 
-    protected static ?string $modelLabel = '号源';
+    protected static ?string $title = '号源管理';
+
+    protected static ?string $breadcrumb = '号源';
+
+    public function getTitle(): string|Htmlable
+    {
+        /** @var HsSchedule $schedule */
+        $schedule = $this->getRecord();
+
+        return '号源 · '.$schedule->adminLabel();
+    }
 
     public function form(Schema $schema): Schema
     {

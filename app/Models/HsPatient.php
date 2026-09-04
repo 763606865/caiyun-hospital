@@ -5,8 +5,10 @@ namespace App\Models;
 use App\Enums\HsPatientIdType;
 use App\Enums\HsPatientRelation;
 use App\Enums\UserGender;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $birthday 出生日期
  * @property HsPatientRelation $relation 与账号关系
  * @property bool $is_default 是否默认就诊人
+ * @property-read bool $is_minor 是否未成年（由生日推算，未填生日则为 false）
  * @property Carbon|null $created_at 创建时间
  * @property Carbon|null $updated_at 更新时间
  * @property Carbon|null $deleted_at 软删除时间
@@ -41,6 +44,11 @@ use Illuminate\Support\Carbon;
 class HsPatient extends Model
 {
     use SoftDeletes;
+
+    /** @var list<string> */
+    protected $appends = [
+        'is_minor',
+    ];
 
     /** @var array<string, mixed> */
     protected $attributes = [
@@ -59,6 +67,20 @@ class HsPatient extends Model
             'relation' => HsPatientRelation::class,
             'is_default' => 'boolean',
         ];
+    }
+
+    /**
+     * @return Attribute<bool, never>
+     */
+    protected function isMinor(): Attribute
+    {
+        return Attribute::get(function (): bool {
+            if (! $this->birthday instanceof CarbonInterface) {
+                return false;
+            }
+
+            return $this->birthday->age < 18;
+        });
     }
 
     /** @return BelongsTo<User, $this> */

@@ -2,6 +2,7 @@
 
 use App\Admin\Commands\CreateAdminUser;
 use App\Admin\Commands\InstallCms;
+use App\Console\Commands\GenerateHospitalSchedulesCommand;
 use App\Exceptions\ApiExceptionRenderer;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RecordClientContext;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         CreateAdminUser::class,
         InstallCms::class,
+        GenerateHospitalSchedulesCommand::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api(prepend: [

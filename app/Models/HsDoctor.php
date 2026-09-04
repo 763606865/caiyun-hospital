@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Models\Pivot\HsDoctorDepartment;
+use App\Observers\HsDoctorObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,12 +35,14 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at 软删除时间
  * @property-read Collection<int, HsDepartment> $departments 所属科室
  * @property-read Collection<int, HsSchedule> $schedules 出诊排班
+ * @property-read Collection<int, HsScheduleTemplate> $scheduleTemplates 出诊周模板
  * @property-read Collection<int, HsAppointment> $appointments 预约单
  * @property-read HsDoctorDepartment|null $pivot 科室关联中间表
  *
  * @method static Builder<static> enabled() 只查询已启用的医生
  */
 #[Table(name: 'hs_doctors')]
+#[ObservedBy([HsDoctorObserver::class])]
 #[Fillable([
     'name', 'slug', 'title', 'specialties', 'summary', 'body',
     'avatar', 'fee', 'sort', 'is_enabled',
@@ -71,6 +75,12 @@ class HsDoctor extends Model
     public function schedules(): HasMany
     {
         return $this->hasMany(HsSchedule::class, 'doctor_id');
+    }
+
+    /** @return HasMany<HsScheduleTemplate, $this> */
+    public function scheduleTemplates(): HasMany
+    {
+        return $this->hasMany(HsScheduleTemplate::class, 'doctor_id');
     }
 
     /** @return HasMany<HsAppointment, $this> */
