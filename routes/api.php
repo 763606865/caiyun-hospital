@@ -2,6 +2,8 @@
 
 use App\Api\Controllers\AppointmentController;
 use App\Api\Controllers\AuthController;
+use App\Api\Controllers\CheckupController;
+use App\Api\Controllers\CheckupOrderController;
 use App\Api\Controllers\ClientVersionController;
 use App\Api\Controllers\CmsController;
 use App\Api\Controllers\DeviceController;
@@ -38,6 +40,10 @@ Route::prefix('hospital')->middleware('throttle:120,1')->group(function (): void
     Route::get('/schedules', [HospitalController::class, 'schedules']);
     Route::get('/schedules/{id}', [HospitalController::class, 'schedule'])->whereNumber('id');
     Route::get('/appointment-settings', [HospitalController::class, 'appointmentSettings']);
+    Route::get('/checkup-packages', [CheckupController::class, 'packages']);
+    Route::get('/checkup-packages/{slug}', [CheckupController::class, 'package']);
+    Route::get('/checkup-slots', [CheckupController::class, 'slots']);
+    Route::get('/checkup-settings', [CheckupController::class, 'settings']);
 });
 
 Route::middleware('auth:api')->group(function (): void {
@@ -64,5 +70,11 @@ Route::middleware('auth:api')->group(function (): void {
     Route::post('/appointments', [AppointmentController::class, 'store'])->middleware('throttle:20,1');
     Route::get('/appointments/{appointmentNo}', [AppointmentController::class, 'show']);
     Route::post('/appointments/{appointmentNo}/cancel', [AppointmentController::class, 'cancel'])->middleware('throttle:20,1');
+    // ==============================================================================
+    // 我的体检预约
+    Route::get('/checkup-orders', [CheckupOrderController::class, 'index']);
+    Route::post('/checkup-orders', [CheckupOrderController::class, 'store'])->middleware('throttle:20,1');
+    Route::get('/checkup-orders/{orderNo}', [CheckupOrderController::class, 'show']);
+    Route::post('/checkup-orders/{orderNo}/cancel', [CheckupOrderController::class, 'cancel'])->middleware('throttle:20,1');
     // ==============================================================================
 });
