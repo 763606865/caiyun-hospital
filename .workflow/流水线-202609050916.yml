@@ -2,112 +2,223 @@ version: "1.0"
 name: 测试、构建、上传、发布、部署到自有主机
 displayName: 测试、构建、上传、发布、部署到自有主机
 stages:
-- name: 测试
-  displayName: 测试
-  strategy: naturally
-  trigger: auto
-  steps:
-  - step: ut@php
-    name: ""
-    displayName: PHP 单元测试
-    phpVersion: "7.4"
-    commands:
-    - '# 安装依赖'
-    - composer install
-    - '# Php单元测试默认命令'
-    - phpunit --testdox-html index.html
-    report:
-      index: index.html
-    checkpoints: {}
-    notify: []
-    strategy:
-      retry: "0"
-      resource:
-        cpu: "2"
-        memory: "4"
-- name: 构建
-  displayName: 构建
-  strategy: naturally
-  trigger: auto
-  steps:
-  - step: build@php
-    name: ""
-    displayName: PHP 构建
-    phpVersion: "8.0"
-    commands:
-    - '# 设置全局composer依赖仓库地址'
-    - composer config -g secure-http false
-    - composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
-    - composer install
-    - php -v
-    artifacts:
-    - name: BUILD_ARTIFACT
-      path:
-      - ./
-      type: .tar.gz
-    notify: []
-    strategy:
-      retry: "0"
-      resource:
-        cpu: "2"
-        memory: "4"
-- name: 上传
-  displayName: 上传
-  strategy: naturally
-  trigger: auto
-  steps:
-  - step: publish@general_artifacts
-    name: ""
-    displayName: 上传制品
-    dependArtifact: BUILD_ARTIFACT
-    artifactName: output
-    notify: []
-    strategy:
-      retry: "0"
-      resource:
-        cpu: "2"
-        memory: "4"
-- name: 发布
-  displayName: 发布
-  strategy: naturally
-  trigger: auto
-  steps:
-  - step: publish@release_artifacts
-    name: ""
+  - name: 测试
+    displayName: 测试
+    strategy: naturally
+    trigger: auto
+    steps:
+      - step: ut@php
+        name: ""
+        displayName: PHP 单元测试
+        phpVersion: "8.4"
+        commands:
+          - "# 准备环境（phpunit.xml 使用 sqlite :memory:，无需 migrate/seed）"
+          - cp .env.example .env
+          - |
+            php -r "
+            \$env = file_get_contents('.env');
+            \$env = preg_replace('/^LICENSE_ENABLED=.*/m', 'LICENSE_ENABLED=false', \$env);
+            \$env = preg_replace('/^APP_ENV=.*/m', 'APP_ENV=testing', \$env);
+            file_put_contents('.env', \$env);
+            "
+          - "# 先装依赖再执行 artisan（含 path 包 Libs/Sms）"
+          - composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+          - composer install --no-interaction --prefer-dist
+          - php artisan key:generate --force
+          - "# 跑测试并产出报告"
+          - php artisan test --testdox-html index.html
+        report:
+          index: index.html
+        checkpoints: {}
+        notify: []
+        strategy:
+          retry: "0"
+          resource:
+            cpu: "2"
+            memory: "4"
+
+  - name: 构建
+    displayName: 构建
+    strategy: naturally
+    trigger: auto
+    steps:
+      - step: build@php
+        name: ""
+        displayName: PHP + 前端构建
+        phpVersion: "8.4"
+        commands:
+          - "# Composer 镜像（生产依赖，不含 dev）"
+          - composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+          - composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+          - php -v
+          - "# 前端资源（public/build 不入库，必须在 CI 构建）"
+          - npm ci || npm install
+          - npm run build
+          - "# 缩小制品体积：去掉前端依赖与本地缓存"
+          - rm -rf node_modules
+          - rm -rf .git
+          - rm -rf storage/logs/* storage/framework/cache/* storage/framework/sessions/* storage/framework/views/* || true
+          - rm -f .env .env.* || true
+          - mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache
+          - touch storage/logs/.gitkeep
+        artifacts:
+          - name: BUILD_ARTIFACT
+            path:
+              - ./
+            type: .tar.gz
+        notify: []
+        strategy:
+          retry: "0"
+          resource:
+            cpu: "2"
+            memory: "4"
+
+  - name: 上传
+    displayName: 上传
+    strategy: naturally
+    trigger: auto
+    steps:
+      - step: publish@general_artifacts
+        name: ""
+        displayName: 上传制品
+        dependArtifact: BUILD_ARTIFACT
+        artifactName: output
+        notify: []
+        strategy:
+          retry: "0"
+          resource:
+            cpu: "2"
+            memory: "4"
+
+  - name: 发布
     displayName: 发布
-    dependArtifact: output
-    version: 1.0.0.0
-    autoIncrement: true
-    notify: []
-    strategy:
-      retry: "0"
-      resource:
-        cpu: "2"
-        memory: "4"
-- name: 部署
-  displayName: 部署
-  strategy: naturally
-  trigger: auto
-  steps:
-  - step: deploy@agent
-    name: ""
-    displayName: 主机部署
-    deployArtifact:
-    - name: output
-      target: "~/gitee_go/deploy"
-      source: artifact
-      dependArtifact: ""
-      artifactRepository: default
-      artifactName: output
-      artifactVersion: latest
-    script: |-
-      # 请在此输入部署脚本，如启动Java应用如下
-      # nohup java -jar test.jar &gt; nohup.out &amp;
-       echo 'Hello Gitee!'
-    hostGroupID: {}
-    notify: []
-    strategy:
-      retry: "0"
+    strategy: naturally
+    trigger: auto
+    steps:
+      - step: publish@release_artifacts
+        name: ""
+        displayName: 发布
+        dependArtifact: output
+        version: 1.0.0.0
+        autoIncrement: true
+        notify: []
+        strategy:
+          retry: "0"
+          resource:
+            cpu: "2"
+            memory: "4"
+
+  - name: 部署
+    displayName: 部署
+    strategy: naturally
+    trigger: auto
+    steps:
+      - step: deploy@agent
+        name: ""
+        displayName: 主机部署
+        deployArtifact:
+          - name: output
+            # 制品解压目录；正式环境请改成实际路径，如 /var/www/caiyun-laravel-hospital/releases/current-upload
+            target: "${APP_ROOT}/upload"
+            source: artifact
+            dependArtifact: ""
+            artifactRepository: default
+            artifactName: output
+            artifactVersion: latest
+        script: |-
+          set -euo pipefail
+
+          # ========== 按需修改 ==========
+          APP_ROOT="${APP_ROOT:-/var/www/caiyun-laravel-hospital}"
+          RELEASES_DIR="${APP_ROOT}/releases"
+          SHARED_DIR="${APP_ROOT}/shared"
+          CURRENT_LINK="${APP_ROOT}/current"
+          UPLOAD_DIR="${APP_ROOT}/upload"
+          KEEP_RELEASES=5
+          PHP_BIN="${PHP_BIN:-php}"
+          # ==============================
+
+          ts="$(date +%Y%m%d%H%M%S)"
+          release_dir="${RELEASES_DIR}/${ts}"
+
+          mkdir -p "${RELEASES_DIR}" "${SHARED_DIR}/storage" "${SHARED_DIR}/bootstrap/cache"
+          mkdir -p "${SHARED_DIR}/storage/app/public" \
+                   "${SHARED_DIR}/storage/framework/cache" \
+                   "${SHARED_DIR}/storage/framework/sessions" \
+                   "${SHARED_DIR}/storage/framework/views" \
+                   "${SHARED_DIR}/storage/logs"
+
+          # 首次部署：从示例生成 shared/.env（之后只改服务器上的 shared/.env）
+          if [ ! -f "${SHARED_DIR}/.env" ]; then
+            if [ -f "${UPLOAD_DIR}/.env.example" ]; then
+              cp "${UPLOAD_DIR}/.env.example" "${SHARED_DIR}/.env"
+              echo "[warn] 已初始化 ${SHARED_DIR}/.env，请立刻填写生产配置后再对外服务"
+            else
+              echo "[error] 缺少 ${SHARED_DIR}/.env 与 .env.example，无法部署" >&2
+              exit 1
+            fi
+          fi
+
+          # 将上传内容落到带时间戳的 release
+          mkdir -p "${release_dir}"
+          # 兼容：制品可能直接解压在 upload，或再套一层目录
+          if [ -f "${UPLOAD_DIR}/artisan" ]; then
+            src="${UPLOAD_DIR}"
+          else
+            src="$(find "${UPLOAD_DIR}" -maxdepth 2 -type f -name artisan | head -n 1 | xargs dirname)"
+          fi
+          if [ -z "${src}" ] || [ ! -f "${src}/artisan" ]; then
+            echo "[error] 未找到 Laravel artisan，请检查制品内容" >&2
+            ls -la "${UPLOAD_DIR}" || true
+            exit 1
+          fi
+
+          rsync -a --delete \
+            --exclude='.env' \
+            --exclude='storage' \
+            --exclude='bootstrap/cache' \
+            "${src}/" "${release_dir}/"
+
+          ln -sfn "${SHARED_DIR}/.env" "${release_dir}/.env"
+          rm -rf "${release_dir}/storage" "${release_dir}/bootstrap/cache"
+          ln -sfn "${SHARED_DIR}/storage" "${release_dir}/storage"
+          ln -sfn "${SHARED_DIR}/bootstrap/cache" "${release_dir}/bootstrap/cache"
+
+          cd "${release_dir}"
+
+          "${PHP_BIN}" artisan --version
+          "${PHP_BIN}" artisan migrate --force
+          "${PHP_BIN}" artisan storage:link || true
+          "${PHP_BIN}" artisan optimize:clear
+          "${PHP_BIN}" artisan config:cache
+          "${PHP_BIN}" artisan route:cache
+          "${PHP_BIN}" artisan view:cache
+          "${PHP_BIN}" artisan event:cache || true
+
+          # 切换当前版本
+          ln -sfn "${release_dir}" "${CURRENT_LINK}"
+
+          # 重启队列 / PHP-FPM（存在才执行）
+          if [ -f "${CURRENT_LINK}/artisan" ]; then
+            "${PHP_BIN}" "${CURRENT_LINK}/artisan" queue:restart || true
+          fi
+          if command -v sudo >/dev/null 2>&1; then
+            sudo systemctl reload php-fpm 2>/dev/null || sudo systemctl reload php8.4-fpm 2>/dev/null || true
+            sudo systemctl reload nginx 2>/dev/null || true
+          fi
+
+          # 只保留最近 N 个 release
+          cd "${RELEASES_DIR}"
+          ls -1dt */ 2>/dev/null | tail -n +"$((KEEP_RELEASES + 1))" | xargs -r rm -rf
+
+          echo "[ok] 已部署到 ${release_dir}"
+          echo "[ok] current -> $(readlink -f "${CURRENT_LINK}")"
+        # 请在 Gitee Go 界面绑定「主机组」；保存后会回写 hostGroupID
+        hostGroupID: {}
+        notify: []
+        strategy:
+          retry: "0"
+
 triggers:
   trigger: manual
 notify: []
