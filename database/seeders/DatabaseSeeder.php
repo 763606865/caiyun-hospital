@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminAuthorizationSeeder::class,
             HsDepartmentCategorySeeder::class,
+            HsCheckupItemSeeder::class,
         ]);
 
         // User::factory(10)->create();

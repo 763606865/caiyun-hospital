@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Enums\HsAppointmentStatus;
 use App\Enums\HsPatientIdType;
+use App\Enums\HsPaymentStatus;
 use App\Enums\HsSchedulePeriod;
 use App\Enums\HsScheduleStatus;
 use App\Models\HsAppointmentSetting;
@@ -13,6 +14,7 @@ use App\Models\HsDoctor;
 use App\Models\HsPatient;
 use App\Models\HsQuota;
 use App\Models\HsSchedule;
+use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -132,6 +134,32 @@ class HospitalPatientApiTest extends TestCase
             'patient_id' => $patient->id,
             'quota_id' => $quota->id,
         ])->assertStatus(409);
+    }
+
+    public function test_paid_appointment_creates_unpaid_record_when_payment_is_enabled(): void
+    {
+        SystemSetting::query()->create([
+            'key' => SystemSetting::DEFAULT_KEY,
+            'site_name' => '测试医院',
+            'payment_enabled' => true,
+        ]);
+        [$user, $patient, $quota] = $this->seedBookableFixture();
+        $token = $user->createToken('test')->plainTextToken;
+
+        $book = $this->withToken($token)->postJson('/api/appointments', [
+            'patient_id' => $patient->id,
+            'quota_id' => $quota->id,
+        ])->assertCreated()
+            ->assertJsonPath('data.status', HsAppointmentStatus::Pending->value)
+            ->assertJsonPath('data.payment_status', HsPaymentStatus::Unpaid->value);
+
+        $this->withToken($token)->getJson('/api/appointments?tab=payment')
+            ->assertOk()
+            ->assertJsonCount(1, 'data.data');
+
+        $this->withToken($token)->postJson('/api/appointments/'.$book->json('data.appointment_no').'/cancel')
+            ->assertOk()
+            ->assertJsonPath('data.payment_status', HsPaymentStatus::Closed->value);
     }
 
     /**

@@ -18,9 +18,9 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
@@ -74,11 +74,15 @@ class HsCheckupPackageResource extends Resource
                     ->required()
                     ->default(HsCheckupGenderLimit::All->value),
                 TextInput::make('duration_minutes')->label('预计时长')->numeric()->suffix('分钟'),
-                TextInput::make('cover')->label('封面')->maxLength(2048),
+                FileUpload::make('cover')->label('封面')
+                    ->disk('public')
+                    ->directory('hospital/checkup-packages')
+                    ->image()
+                    ->imageEditor(),
                 TextInput::make('sort')->label('排序')->numeric()->default(0)->required(),
                 Toggle::make('is_enabled')->label('上架')->default(true),
-                Textarea::make('summary')->label('简介')->rows(2)->columnSpanFull(),
-                Textarea::make('notice')->label('套餐须知')->rows(3)->columnSpanFull(),
+                RichEditor::make('summary')->label('简介')->maxLength(500)->columnSpanFull(),
+                RichEditor::make('notice')->label('套餐须知')->columnSpanFull(),
                 RichEditor::make('body')->label('详细说明')->columnSpanFull(),
             ]),
         ]);

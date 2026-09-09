@@ -3,6 +3,7 @@
 namespace App\Api\Controllers;
 
 use App\Enums\HsCheckupOrderStatus;
+use App\Enums\HsPaymentStatus;
 use App\Models\HsCheckupOrder;
 use App\Services\Hospital\CheckupBookingService;
 use Illuminate\Http\JsonResponse;
@@ -29,6 +30,7 @@ class CheckupOrderController extends Controller
     {
         $validated = $request->validate([
             'status' => ['nullable', Rule::enum(HsCheckupOrderStatus::class)],
+            'payment_status' => ['nullable', Rule::enum(HsPaymentStatus::class)],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
@@ -40,6 +42,7 @@ class CheckupOrderController extends Controller
                 'campus:id,name,slug,address',
             ])
             ->when($validated['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
+            ->when($validated['payment_status'] ?? null, fn ($query, $status) => $query->where('payment_status', $status))
             ->orderByDesc('appointment_date')
             ->orderByDesc('id')
             ->paginate($validated['per_page'] ?? 15);

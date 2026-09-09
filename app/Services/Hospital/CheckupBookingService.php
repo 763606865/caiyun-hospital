@@ -4,6 +4,7 @@ namespace App\Services\Hospital;
 
 use App\Enums\HsCheckupGenderLimit;
 use App\Enums\HsCheckupOrderStatus;
+use App\Enums\HsPaymentStatus;
 use App\Enums\UserGender;
 use App\Exceptions\ConflictException;
 use App\Exceptions\InvalidArgumentException;
@@ -11,6 +12,7 @@ use App\Models\HsCheckupOrder;
 use App\Models\HsCheckupSetting;
 use App\Models\HsCheckupSlot;
 use App\Models\HsPatient;
+use App\Models\SystemSetting;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
@@ -80,6 +82,10 @@ class CheckupBookingService
             $slot->remaining = max(0, $slot->remaining - 1);
             $slot->save();
 
+            $paymentStatus = SystemSetting::current()->payment_enabled && (float) $package->price > 0
+                ? HsPaymentStatus::Unpaid
+                : HsPaymentStatus::NotRequired;
+
             return HsCheckupOrder::query()->create([
                 'order_no' => $this->generateOrderNo(),
                 'user_id' => $user->id,
@@ -91,6 +97,7 @@ class CheckupBookingService
                 'period' => $slot->period,
                 'price' => $package->price,
                 'status' => HsCheckupOrderStatus::Pending,
+                'payment_status' => $paymentStatus,
                 'remark' => $remark,
             ]);
         });
@@ -124,6 +131,9 @@ class CheckupBookingService
 
             $locked->forceFill([
                 'status' => HsCheckupOrderStatus::Cancelled,
+                'payment_status' => $locked->payment_status === HsPaymentStatus::Unpaid
+                    ? HsPaymentStatus::Closed
+                    : $locked->payment_status,
                 'cancel_reason' => $reason,
                 'cancelled_at' => now(),
             ])->save();

@@ -8,6 +8,7 @@ use App\Admin\Resources\HsAppointments\Pages\ListHsAppointments;
 use App\Admin\Resources\HsPatients\HsPatientResource;
 use App\Admin\Support\EnumOptions;
 use App\Enums\HsAppointmentStatus;
+use App\Enums\HsPaymentStatus;
 use App\Enums\HsSchedulePeriod;
 use App\Models\HsAppointment;
 use App\Models\HsPatient;
@@ -138,6 +139,12 @@ class HsAppointmentResource extends Resource
                     ->required()
                     ->default(HsAppointmentStatus::Pending->value)
                     ->live(),
+                Select::make('payment_status')->label('支付状态')
+                    ->options(EnumOptions::from(HsPaymentStatus::cases()))
+                    ->required()
+                    ->default(HsPaymentStatus::NotRequired->value),
+                TextInput::make('paid_amount')->label('实付金额')->numeric()->prefix('¥')->default(0)->required(),
+                DateTimePicker::make('paid_at')->label('支付时间')->seconds(false),
                 TextInput::make('cancel_reason')->label('取消原因')
                     ->visible(fn (Get $get): bool => $get('status') === HsAppointmentStatus::Cancelled->value),
                 DateTimePicker::make('cancelled_at')->label('取消时间')->seconds(false)
@@ -177,9 +184,19 @@ class HsAppointmentResource extends Resource
                     HsAppointmentStatus::Cancelled => 'gray',
                     HsAppointmentStatus::NoShow => 'danger',
                 }),
+            TextColumn::make('payment_status')->label('支付状态')->badge()
+                ->formatStateUsing(fn (HsPaymentStatus $state) => $state->label())
+                ->color(fn (HsPaymentStatus $state): string => match ($state) {
+                    HsPaymentStatus::NotRequired, HsPaymentStatus::Closed => 'gray',
+                    HsPaymentStatus::Unpaid => 'warning',
+                    HsPaymentStatus::Paid => 'success',
+                    HsPaymentStatus::Refunding => 'info',
+                    HsPaymentStatus::Refunded => 'primary',
+                }),
             TextColumn::make('created_at')->label('下单时间')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
         ])->filters([
             SelectFilter::make('status')->label('状态')->options(EnumOptions::from(HsAppointmentStatus::cases())),
+            SelectFilter::make('payment_status')->label('支付状态')->options(EnumOptions::from(HsPaymentStatus::cases())),
             SelectFilter::make('department_id')->label('科室')->relationship('department', 'name'),
             SelectFilter::make('doctor_id')->label('医生')->relationship('doctor', 'name'),
             TrashedFilter::make(),

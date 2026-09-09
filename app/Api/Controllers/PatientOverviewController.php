@@ -3,7 +3,9 @@
 namespace App\Api\Controllers;
 
 use App\Enums\HsAppointmentStatus;
+use App\Enums\HsPaymentStatus;
 use App\Models\HsAppointment;
+use App\Models\HsCheckupOrder;
 use App\Models\HsPatient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -62,6 +64,17 @@ class PatientOverviewController extends Controller
             ->orderBy('id')
             ->get();
 
+        $pendingPayments = HsAppointment::query()
+            ->where('user_id', $user->id)
+            ->where('payment_status', HsPaymentStatus::Unpaid)
+            ->when($patientId, fn ($query) => $query->where('patient_id', $patientId))
+            ->count()
+            + HsCheckupOrder::query()
+                ->where('user_id', $user->id)
+                ->where('payment_status', HsPaymentStatus::Unpaid)
+                ->when($patientId, fn ($query) => $query->where('patient_id', $patientId))
+                ->count();
+
         return $this->success([
             'user' => [
                 'id' => $user->id,
@@ -78,9 +91,9 @@ class PatientOverviewController extends Controller
             'stats' => [
                 'pending_appointments' => (clone $pendingQuery)->count(),
                 'patients' => $patients->count(),
-                // 报告/缴费需对接 LIS / HIS，本地闭环暂返回 0
+                // 报告需对接 LIS / HIS
                 'reports' => 0,
-                'pending_payments' => 0,
+                'pending_payments' => $pendingPayments,
             ],
         ]);
     }

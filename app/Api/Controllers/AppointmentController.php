@@ -3,6 +3,7 @@
 namespace App\Api\Controllers;
 
 use App\Enums\HsAppointmentStatus;
+use App\Enums\HsPaymentStatus;
 use App\Models\HsAppointment;
 use App\Services\Hospital\AppointmentBookingService;
 use Illuminate\Http\JsonResponse;
@@ -32,20 +33,10 @@ class AppointmentController extends Controller
         $validated = $request->validate([
             'status' => ['nullable', Rule::enum(HsAppointmentStatus::class)],
             'patient_id' => ['nullable', 'integer', 'min:1'],
+            'payment_status' => ['nullable', Rule::enum(HsPaymentStatus::class)],
             'tab' => ['nullable', Rule::in(['pending', 'ticket', 'waiting', 'completed', 'payment'])],
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
-
-        // 待缴费依赖 HIS/支付，本地闭环暂无空列表
-        if (($validated['tab'] ?? null) === 'payment') {
-            return $this->success([
-                'data' => [],
-                'current_page' => 1,
-                'last_page' => 1,
-                'per_page' => $validated['per_page'] ?? 15,
-                'total' => 0,
-            ]);
-        }
 
         $appointments = HsAppointment::query()
             ->where('user_id', $this->user()->id)
@@ -58,12 +49,14 @@ class AppointmentController extends Controller
             ])
             ->when($validated['patient_id'] ?? null, fn ($query, $patientId) => $query->where('patient_id', $patientId))
             ->when($validated['status'] ?? null, fn ($query, $status) => $query->where('status', $status))
+            ->when($validated['payment_status'] ?? null, fn ($query, $status) => $query->where('payment_status', $status))
             ->when($validated['tab'] ?? null, function ($query, string $tab): void {
                 match ($tab) {
                     'pending' => $query->where('status', HsAppointmentStatus::Pending),
                     'ticket' => $query->where('status', HsAppointmentStatus::Pending)->whereNull('checked_in_at'),
                     'waiting' => $query->where('status', HsAppointmentStatus::Pending)->whereNotNull('checked_in_at'),
                     'completed' => $query->where('status', HsAppointmentStatus::Completed),
+                    'payment' => $query->where('payment_status', HsPaymentStatus::Unpaid),
                     default => null,
                 };
             })

@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Enums\HsCheckupGenderLimit;
 use App\Enums\HsCheckupOrderStatus;
+use App\Enums\HsPaymentStatus;
 use App\Enums\HsSchedulePeriod;
 use App\Enums\UserGender;
 use App\Models\HsCampus;
@@ -11,6 +12,7 @@ use App\Models\HsCheckupPackage;
 use App\Models\HsCheckupSetting;
 use App\Models\HsCheckupSlot;
 use App\Models\HsPatient;
+use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -81,6 +83,30 @@ class CheckupApiTest extends TestCase
             'patient_id' => $patient->id,
             'slot_id' => $slot->id,
         ])->assertStatus(409);
+    }
+
+    public function test_paid_checkup_package_creates_unpaid_order_when_payment_is_enabled(): void
+    {
+        SystemSetting::query()->create([
+            'key' => SystemSetting::DEFAULT_KEY,
+            'site_name' => '测试医院',
+            'payment_enabled' => true,
+        ]);
+        [$package, $slot, $user, $patient] = $this->seedBookableFixture();
+        $token = $user->createToken('test')->plainTextToken;
+
+        $response = $this->withToken($token)->postJson('/api/checkup-orders', [
+            'patient_id' => $patient->id,
+            'slot_id' => $slot->id,
+        ])->assertCreated()
+            ->assertJsonPath('data.status', HsCheckupOrderStatus::Pending->value)
+            ->assertJsonPath('data.payment_status', HsPaymentStatus::Unpaid->value);
+
+        $this->withToken($token)->postJson('/api/checkup-orders/'.$response->json('data.order_no').'/cancel')
+            ->assertOk()
+            ->assertJsonPath('data.payment_status', HsPaymentStatus::Closed->value);
+
+        $this->assertSame('299.00', $package->price);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\HsAppointmentStatus;
+use App\Enums\HsPaymentStatus;
 use App\Enums\HsSchedulePeriod;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -31,6 +32,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $ticket_no 取号号码
  * @property string|null $voucher_code 凭证码
  * @property HsAppointmentStatus $status 状态
+ * @property HsPaymentStatus $payment_status 支付状态
+ * @property string $paid_amount 实付金额
+ * @property Carbon|null $paid_at 支付时间
  * @property string|null $cancel_reason 取消原因
  * @property Carbon|null $cancelled_at 取消时间
  * @property Carbon|null $completed_at 完成就诊时间
@@ -52,7 +56,8 @@ use Illuminate\Support\Carbon;
 #[Fillable([
     'appointment_no', 'user_id', 'patient_id', 'campus_id', 'department_id',
     'doctor_id', 'schedule_id', 'quota_id', 'appointment_date', 'period',
-    'start_time', 'end_time', 'fee', 'ticket_no', 'voucher_code', 'status',
+    'start_time', 'end_time', 'fee', 'ticket_no', 'voucher_code', 'status', 'payment_status',
+    'paid_amount', 'paid_at',
     'cancel_reason', 'cancelled_at', 'completed_at', 'notified_at', 'checked_in_at', 'remark',
 ])]
 class HsAppointment extends Model
@@ -62,7 +67,9 @@ class HsAppointment extends Model
     /** @var array<string, mixed> */
     protected $attributes = [
         'status' => HsAppointmentStatus::Pending->value,
+        'payment_status' => HsPaymentStatus::NotRequired->value,
         'fee' => 0,
+        'paid_amount' => 0,
     ];
 
     /** @return array<string, string> */
@@ -73,6 +80,9 @@ class HsAppointment extends Model
             'period' => HsSchedulePeriod::class,
             'fee' => 'decimal:2',
             'status' => HsAppointmentStatus::class,
+            'payment_status' => HsPaymentStatus::class,
+            'paid_amount' => 'decimal:2',
+            'paid_at' => 'datetime',
             'cancelled_at' => 'datetime',
             'completed_at' => 'datetime',
             'notified_at' => 'datetime',

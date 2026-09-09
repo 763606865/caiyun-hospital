@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\HsCheckupOrderStatus;
+use App\Enums\HsPaymentStatus;
 use App\Enums\HsSchedulePeriod;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -25,6 +26,9 @@ use Illuminate\Support\Carbon;
  * @property HsSchedulePeriod $period
  * @property string $price
  * @property HsCheckupOrderStatus $status
+ * @property HsPaymentStatus $payment_status
+ * @property string $paid_amount
+ * @property Carbon|null $paid_at
  * @property string|null $cancel_reason
  * @property Carbon|null $cancelled_at
  * @property Carbon|null $completed_at
@@ -41,7 +45,7 @@ use Illuminate\Support\Carbon;
 #[Table(name: 'hs_checkup_orders')]
 #[Fillable([
     'order_no', 'user_id', 'patient_id', 'campus_id', 'package_id', 'slot_id',
-    'appointment_date', 'period', 'price', 'status', 'cancel_reason',
+    'appointment_date', 'period', 'price', 'status', 'payment_status', 'paid_amount', 'paid_at', 'cancel_reason',
     'cancelled_at', 'completed_at', 'remark',
 ])]
 class HsCheckupOrder extends Model
@@ -51,7 +55,9 @@ class HsCheckupOrder extends Model
     /** @var array<string, mixed> */
     protected $attributes = [
         'status' => HsCheckupOrderStatus::Pending->value,
+        'payment_status' => HsPaymentStatus::NotRequired->value,
         'price' => 0,
+        'paid_amount' => 0,
     ];
 
     /** @return array<string, string> */
@@ -62,6 +68,9 @@ class HsCheckupOrder extends Model
             'period' => HsSchedulePeriod::class,
             'price' => 'decimal:2',
             'status' => HsCheckupOrderStatus::class,
+            'payment_status' => HsPaymentStatus::class,
+            'paid_amount' => 'decimal:2',
+            'paid_at' => 'datetime',
             'cancelled_at' => 'datetime',
             'completed_at' => 'datetime',
         ];

@@ -15,6 +15,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -33,6 +34,17 @@ use UnitEnum;
 
 class HsCheckupItemResource extends Resource
 {
+    private const array CATEGORY_OPTIONS = [
+        '一般检查' => '一般检查',
+        '临床检查' => '临床检查',
+        '实验室检查' => '实验室检查',
+        '影像检查' => '影像检查',
+        '功能检查' => '功能检查',
+        '妇科检查' => '妇科检查',
+        '专项筛查' => '专项筛查',
+        '其他' => '其他',
+    ];
+
     protected static ?string $model = HsCheckupItem::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBeaker;
@@ -57,7 +69,7 @@ class HsCheckupItemResource extends Resource
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn ($state, $set, $record) => $record ?: $set('slug', Str::slug($state) ?: $state)),
                 TextInput::make('slug')->label('Slug')->required()->unique(ignoreRecord: true)->maxLength(255),
-                TextInput::make('category')->label('分类')->maxLength(100),
+                Select::make('category')->label('分类')->options(self::CATEGORY_OPTIONS)->required(),
                 TextInput::make('sort')->label('排序')->numeric()->default(0)->required(),
                 Toggle::make('is_enabled')->label('启用')->default(true),
                 Textarea::make('summary')->label('简介')->rows(3)->columnSpanFull(),

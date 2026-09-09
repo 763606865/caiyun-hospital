@@ -3,6 +3,7 @@
 namespace App\Services\Hospital;
 
 use App\Enums\HsAppointmentStatus;
+use App\Enums\HsPaymentStatus;
 use App\Enums\HsSchedulePeriod;
 use App\Enums\HsScheduleStatus;
 use App\Exceptions\ConflictException;
@@ -12,6 +13,7 @@ use App\Models\HsAppointmentSetting;
 use App\Models\HsPatient;
 use App\Models\HsQuota;
 use App\Models\HsSchedule;
+use App\Models\SystemSetting;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
@@ -80,6 +82,9 @@ class AppointmentBookingService
             $quota->save();
 
             $fee = $schedule->fee ?? $schedule->doctor?->fee ?? 0;
+            $paymentStatus = SystemSetting::current()->payment_enabled && (float) $fee > 0
+                ? HsPaymentStatus::Unpaid
+                : HsPaymentStatus::NotRequired;
             $appointmentNo = $this->generateAppointmentNo();
             $ticketNo = $this->nextTicketNo($schedule);
 
@@ -100,6 +105,7 @@ class AppointmentBookingService
                 'ticket_no' => $ticketNo,
                 'voucher_code' => $appointmentNo,
                 'status' => HsAppointmentStatus::Pending,
+                'payment_status' => $paymentStatus,
                 'remark' => $remark,
             ]);
         });
@@ -133,6 +139,9 @@ class AppointmentBookingService
 
             $locked->forceFill([
                 'status' => HsAppointmentStatus::Cancelled,
+                'payment_status' => $locked->payment_status === HsPaymentStatus::Unpaid
+                    ? HsPaymentStatus::Closed
+                    : $locked->payment_status,
                 'cancel_reason' => $reason,
                 'cancelled_at' => now(),
             ])->save();
