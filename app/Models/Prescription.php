@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Concerns\BelongsToOrganization;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+#[Fillable(['organization_id', 'branch_id', 'visit_id', 'medical_record_id', 'patient_id', 'doctor_id', 'prescription_no', 'type', 'status', 'dose_count', 'administration', 'frequency', 'usage_instructions', 'remark', 'issued_at', 'dispensed_at'])]
+class Prescription extends Model
+{
+    use BelongsToOrganization, SoftDeletes;
+
+    protected function casts(): array
+    {
+        return ['issued_at' => 'datetime', 'dispensed_at' => 'datetime'];
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function visit(): BelongsTo
+    {
+        return $this->belongsTo(Visit::class);
+    }
+
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(HsPatient::class, 'patient_id');
+    }
+
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo(HsDoctor::class, 'doctor_id');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(PrescriptionItem::class);
+    }
+}

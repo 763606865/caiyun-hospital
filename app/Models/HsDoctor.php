@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganization;
 use App\Models\Pivot\HsDoctorDepartment;
 use App\Observers\HsDoctorObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -12,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -34,9 +34,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at 更新时间
  * @property Carbon|null $deleted_at 软删除时间
  * @property-read Collection<int, HsDepartment> $departments 所属科室
- * @property-read Collection<int, HsSchedule> $schedules 出诊排班
- * @property-read Collection<int, HsScheduleTemplate> $scheduleTemplates 出诊周模板
- * @property-read Collection<int, HsAppointment> $appointments 预约单
  * @property-read HsDoctorDepartment|null $pivot 科室关联中间表
  *
  * @method static Builder<static> enabled() 只查询已启用的医生
@@ -49,7 +46,7 @@ use Illuminate\Support\Carbon;
 ])]
 class HsDoctor extends Model
 {
-    use SoftDeletes;
+    use BelongsToOrganization, SoftDeletes;
 
     /** @return array<string, string> */
     protected function casts(): array
@@ -69,24 +66,6 @@ class HsDoctor extends Model
             ->using(HsDoctorDepartment::class)
             ->withPivot('is_primary')
             ->withTimestamps();
-    }
-
-    /** @return HasMany<HsSchedule, $this> */
-    public function schedules(): HasMany
-    {
-        return $this->hasMany(HsSchedule::class, 'doctor_id');
-    }
-
-    /** @return HasMany<HsScheduleTemplate, $this> */
-    public function scheduleTemplates(): HasMany
-    {
-        return $this->hasMany(HsScheduleTemplate::class, 'doctor_id');
-    }
-
-    /** @return HasMany<HsAppointment, $this> */
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(HsAppointment::class, 'doctor_id');
     }
 
     /**

@@ -1,83 +1,70 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/media'
+* @route '/admin/{tenant}/media'
 */
-const ListMedia = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ListMedia.url(options),
+const ListMedia = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListMedia.url(args, options),
     method: 'get',
 })
 
 ListMedia.definition = {
     methods: ["get","head"],
-    url: '/admin/media',
+    url: '/admin/{tenant}/media',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/media'
+* @route '/admin/{tenant}/media'
 */
-ListMedia.url = (options?: RouteQueryOptions) => {
-    return ListMedia.definition.url + queryParams(options)
+ListMedia.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
+        args = { tenant: args.uuid }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            tenant: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        tenant: typeof args.tenant === 'object'
+        ? args.tenant.uuid
+        : args.tenant,
+    }
+
+    return ListMedia.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/media'
+* @route '/admin/{tenant}/media'
 */
-ListMedia.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ListMedia.url(options),
+ListMedia.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListMedia.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/media'
+* @route '/admin/{tenant}/media'
 */
-ListMedia.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: ListMedia.url(options),
+ListMedia.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ListMedia.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
-* @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/media'
-*/
-const ListMediaForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListMedia.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
-* @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/media'
-*/
-ListMediaForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListMedia.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
-* @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/media'
-*/
-ListMediaForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListMedia.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-ListMedia.form = ListMediaForm
 
 export default ListMedia

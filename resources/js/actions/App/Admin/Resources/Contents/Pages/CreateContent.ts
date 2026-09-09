@@ -1,83 +1,70 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
-* @route '/admin/contents/create'
+* @route '/admin/{tenant}/contents/create'
 */
-const CreateContent = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: CreateContent.url(options),
+const CreateContent = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: CreateContent.url(args, options),
     method: 'get',
 })
 
 CreateContent.definition = {
     methods: ["get","head"],
-    url: '/admin/contents/create',
+    url: '/admin/{tenant}/contents/create',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
-* @route '/admin/contents/create'
+* @route '/admin/{tenant}/contents/create'
 */
-CreateContent.url = (options?: RouteQueryOptions) => {
-    return CreateContent.definition.url + queryParams(options)
+CreateContent.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
+        args = { tenant: args.uuid }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            tenant: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        tenant: typeof args.tenant === 'object'
+        ? args.tenant.uuid
+        : args.tenant,
+    }
+
+    return CreateContent.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
-* @route '/admin/contents/create'
+* @route '/admin/{tenant}/contents/create'
 */
-CreateContent.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: CreateContent.url(options),
+CreateContent.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: CreateContent.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
-* @route '/admin/contents/create'
+* @route '/admin/{tenant}/contents/create'
 */
-CreateContent.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: CreateContent.url(options),
+CreateContent.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: CreateContent.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
-* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
-* @route '/admin/contents/create'
-*/
-const CreateContentForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CreateContent.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
-* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
-* @route '/admin/contents/create'
-*/
-CreateContentForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CreateContent.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
-* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
-* @route '/admin/contents/create'
-*/
-CreateContentForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CreateContent.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-CreateContent.form = CreateContentForm
 
 export default CreateContent

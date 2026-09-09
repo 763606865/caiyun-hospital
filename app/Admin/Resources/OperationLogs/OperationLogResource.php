@@ -14,6 +14,8 @@ use UnitEnum;
 
 class OperationLogResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = OperationLog::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;

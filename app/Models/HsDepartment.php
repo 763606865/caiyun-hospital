@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganization;
 use App\Models\Pivot\HsDoctorDepartment;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -11,7 +12,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -30,35 +30,30 @@ use Illuminate\Support\Carbon;
  * @property string|null $location 位置/楼层/诊区
  * @property int $sort 排序值
  * @property bool $is_enabled 是否启用
- * @property bool $is_featured 是否常挂/首页推荐
  * @property Carbon|null $created_at 创建时间
  * @property Carbon|null $updated_at 更新时间
  * @property Carbon|null $deleted_at 软删除时间
  * @property-read HsCampus $campus 所属院区
  * @property-read HsDepartmentCategory|null $category 所属分类
  * @property-read Collection<int, HsDoctor> $doctors 科室医生
- * @property-read Collection<int, HsSchedule> $schedules 出诊排班
- * @property-read Collection<int, HsAppointment> $appointments 预约单
  * @property-read HsDoctorDepartment|null $pivot 医生关联中间表
  *
  * @method static Builder<static> enabled() 只查询已启用的科室
- * @method static Builder<static> featured() 只查询常挂科室
  */
 #[Table(name: 'hs_departments')]
 #[Fillable([
     'campus_id', 'category_id', 'name', 'slug', 'summary', 'specialties', 'body',
-    'cover', 'location', 'sort', 'is_enabled', 'is_featured',
+    'cover', 'location', 'sort', 'is_enabled',
 ])]
 class HsDepartment extends Model
 {
-    use SoftDeletes;
+    use BelongsToOrganization, SoftDeletes;
 
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
             'is_enabled' => 'boolean',
-            'is_featured' => 'boolean',
         ];
     }
 
@@ -85,18 +80,6 @@ class HsDepartment extends Model
             ->withTimestamps();
     }
 
-    /** @return HasMany<HsSchedule, $this> */
-    public function schedules(): HasMany
-    {
-        return $this->hasMany(HsSchedule::class, 'department_id');
-    }
-
-    /** @return HasMany<HsAppointment, $this> */
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(HsAppointment::class, 'department_id');
-    }
-
     /**
      * @param  Builder<HsDepartment>  $query
      * @return Builder<HsDepartment>
@@ -105,15 +88,5 @@ class HsDepartment extends Model
     protected function enabled(Builder $query): Builder
     {
         return $query->where('is_enabled', true);
-    }
-
-    /**
-     * @param  Builder<HsDepartment>  $query
-     * @return Builder<HsDepartment>
-     */
-    #[Scope]
-    protected function featured(Builder $query): Builder
-    {
-        return $query->where('is_featured', true);
     }
 }

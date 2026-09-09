@@ -6,6 +6,7 @@ use App\Admin\Resources\HsPatients\Pages\CreateHsPatient;
 use App\Admin\Resources\HsPatients\Pages\EditHsPatient;
 use App\Admin\Resources\HsPatients\Pages\ListHsPatients;
 use App\Admin\Support\EnumOptions;
+use App\Admin\Support\TenantResource;
 use App\Enums\HsPatientIdType;
 use App\Enums\HsPatientRelation;
 use App\Enums\UserGender;
@@ -24,7 +25,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -37,7 +37,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 
-class HsPatientResource extends Resource
+class HsPatientResource extends TenantResource
 {
     protected static ?string $model = HsPatient::class;
 

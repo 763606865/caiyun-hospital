@@ -16,6 +16,8 @@ use Filament\Tables\Table;
 
 class AdminUserResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = AdminUser::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;

@@ -22,6 +22,8 @@ use UnitEnum;
 
 class MediaResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = Media::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;

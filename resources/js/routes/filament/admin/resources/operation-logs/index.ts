@@ -1,84 +1,71 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
 * @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
-* @route '/admin/operation-logs'
+* @route '/admin/{tenant}/operation-logs'
 */
-export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
+export const index = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(args, options),
     method: 'get',
 })
 
 index.definition = {
     methods: ["get","head"],
-    url: '/admin/operation-logs',
+    url: '/admin/{tenant}/operation-logs',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
 * @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
-* @route '/admin/operation-logs'
+* @route '/admin/{tenant}/operation-logs'
 */
-index.url = (options?: RouteQueryOptions) => {
-    return index.definition.url + queryParams(options)
+index.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
+        args = { tenant: args.uuid }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            tenant: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        tenant: typeof args.tenant === 'object'
+        ? args.tenant.uuid
+        : args.tenant,
+    }
+
+    return index.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
 * @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
-* @route '/admin/operation-logs'
+* @route '/admin/{tenant}/operation-logs'
 */
-index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
+index.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
 * @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
-* @route '/admin/operation-logs'
+* @route '/admin/{tenant}/operation-logs'
 */
-index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: index.url(options),
+index.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: index.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
-* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
-* @route '/admin/operation-logs'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
-* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
-* @route '/admin/operation-logs'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
-* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
-* @route '/admin/operation-logs'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 const operationLogs = {
     index: Object.assign(index, index),

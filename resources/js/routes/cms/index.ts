@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\CmsPreviewController::__invoke
 * @see app/Http/Controllers/CmsPreviewController.php:10
@@ -68,43 +68,6 @@ preview.head = (args: { content: number | { id: number } } | [content: number | 
 })
 
 /**
-* @see \App\Http\Controllers\CmsPreviewController::__invoke
-* @see app/Http/Controllers/CmsPreviewController.php:10
-* @route '/cms/preview/{content}'
-*/
-const previewForm = (args: { content: number | { id: number } } | [content: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: preview.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CmsPreviewController::__invoke
-* @see app/Http/Controllers/CmsPreviewController.php:10
-* @route '/cms/preview/{content}'
-*/
-previewForm.get = (args: { content: number | { id: number } } | [content: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: preview.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CmsPreviewController::__invoke
-* @see app/Http/Controllers/CmsPreviewController.php:10
-* @route '/cms/preview/{content}'
-*/
-previewForm.head = (args: { content: number | { id: number } } | [content: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: preview.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-preview.form = previewForm
-
-/**
 * @see \App\Http\Controllers\SitemapController::__invoke
 * @see app/Http/Controllers/SitemapController.php:10
 * @route '/sitemap.xml'
@@ -147,43 +110,6 @@ sitemap.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: sitemap.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\SitemapController::__invoke
-* @see app/Http/Controllers/SitemapController.php:10
-* @route '/sitemap.xml'
-*/
-const sitemapForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: sitemap.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SitemapController::__invoke
-* @see app/Http/Controllers/SitemapController.php:10
-* @route '/sitemap.xml'
-*/
-sitemapForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: sitemap.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SitemapController::__invoke
-* @see app/Http/Controllers/SitemapController.php:10
-* @route '/sitemap.xml'
-*/
-sitemapForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: sitemap.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-sitemap.form = sitemapForm
 
 const cms = {
     preview: Object.assign(preview, preview),

@@ -5,6 +5,7 @@ namespace App\Admin\Resources\HsCampuses;
 use App\Admin\Resources\HsCampuses\Pages\CreateHsCampus;
 use App\Admin\Resources\HsCampuses\Pages\EditHsCampus;
 use App\Admin\Resources\HsCampuses\Pages\ListHsCampuses;
+use App\Admin\Support\TenantResource;
 use App\Forms\Components\AmapLocationPicker;
 use App\Models\HsCampus;
 use BackedEnum;
@@ -19,7 +20,6 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use UnitEnum;
 
-class HsCampusResource extends Resource
+class HsCampusResource extends TenantResource
 {
     protected static ?string $model = HsCampus::class;
 

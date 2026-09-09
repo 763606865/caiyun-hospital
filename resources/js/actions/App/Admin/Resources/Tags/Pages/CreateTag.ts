@@ -1,83 +1,70 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
-* @route '/admin/tags/create'
+* @route '/admin/{tenant}/tags/create'
 */
-const CreateTag = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: CreateTag.url(options),
+const CreateTag = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: CreateTag.url(args, options),
     method: 'get',
 })
 
 CreateTag.definition = {
     methods: ["get","head"],
-    url: '/admin/tags/create',
+    url: '/admin/{tenant}/tags/create',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
-* @route '/admin/tags/create'
+* @route '/admin/{tenant}/tags/create'
 */
-CreateTag.url = (options?: RouteQueryOptions) => {
-    return CreateTag.definition.url + queryParams(options)
+CreateTag.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
+        args = { tenant: args.uuid }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            tenant: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        tenant: typeof args.tenant === 'object'
+        ? args.tenant.uuid
+        : args.tenant,
+    }
+
+    return CreateTag.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
-* @route '/admin/tags/create'
+* @route '/admin/{tenant}/tags/create'
 */
-CreateTag.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: CreateTag.url(options),
+CreateTag.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: CreateTag.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
-* @route '/admin/tags/create'
+* @route '/admin/{tenant}/tags/create'
 */
-CreateTag.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: CreateTag.url(options),
+CreateTag.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: CreateTag.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
-* @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
-* @route '/admin/tags/create'
-*/
-const CreateTagForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CreateTag.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
-* @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
-* @route '/admin/tags/create'
-*/
-CreateTagForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CreateTag.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
-* @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
-* @route '/admin/tags/create'
-*/
-CreateTagForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CreateTag.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-CreateTag.form = CreateTagForm
 
 export default CreateTag

@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Admin\Resources\InventoryBatches\Pages;
+
+use App\Admin\Resources\InventoryBatches\InventoryBatchResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditInventoryBatch extends EditRecord
+{
+    protected static string $resource = InventoryBatchResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [DeleteAction::make()];
+    }
+}

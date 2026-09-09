@@ -39,9 +39,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $updated_at 更新时间
  * @property Carbon|null $deleted_at 软删除时间
  * @property-read Collection<int, UserAccount> $accounts 第三方平台账号
- * @property-read Collection<int, UserDevice> $devices 客户端设备
  * @property-read Collection<int, HsPatient> $patients 就诊人
- * @property-read Collection<int, HsAppointment> $appointments 挂号预约单
  */
 #[Table(name: 'users')]
 #[Fillable([
@@ -86,16 +84,6 @@ class User extends Authenticatable
     }
 
     /**
-     * 用户使用过的客户端设备。
-     *
-     * @return HasMany<UserDevice, $this>
-     */
-    public function devices(): HasMany
-    {
-        return $this->hasMany(UserDevice::class);
-    }
-
-    /**
      * 用户绑定的就诊人。
      *
      * @return HasMany<HsPatient, $this>
@@ -103,16 +91,6 @@ class User extends Authenticatable
     public function patients(): HasMany
     {
         return $this->hasMany(HsPatient::class);
-    }
-
-    /**
-     * 用户的挂号预约单。
-     *
-     * @return HasMany<HsAppointment, $this>
-     */
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(HsAppointment::class);
     }
 
     /**

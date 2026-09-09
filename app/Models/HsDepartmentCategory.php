@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -31,7 +32,7 @@ use Illuminate\Support\Carbon;
 #[Fillable(['name', 'slug', 'sort', 'is_enabled'])]
 class HsDepartmentCategory extends Model
 {
-    use SoftDeletes;
+    use BelongsToOrganization, SoftDeletes;
 
     /** @return array<string, string> */
     protected function casts(): array

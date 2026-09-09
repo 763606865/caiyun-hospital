@@ -23,7 +23,6 @@
         "ext-redis": "*",
         "ext-zip": "*",
         "aliyuncs/oss-sdk-php": "^2.7",
-        "caiyun/license-client": "^2.0",
         "caiyun/sms": "@dev",
         "filament/filament": "^5.7",
         "inertiajs/inertia-laravel": "^3.0",

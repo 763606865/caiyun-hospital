@@ -1,42 +1,43 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/media/{record}/edit'
+* @route '/admin/{tenant}/media/{record}/edit'
 */
-const EditMedia = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const EditMedia = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditMedia.url(args, options),
     method: 'get',
 })
 
 EditMedia.definition = {
     methods: ["get","head"],
-    url: '/admin/media/{record}/edit',
+    url: '/admin/{tenant}/media/{record}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/media/{record}/edit'
+* @route '/admin/{tenant}/media/{record}/edit'
 */
-EditMedia.url = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { record: args }
-    }
-
+EditMedia.url = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions) => {
     if (Array.isArray(args)) {
         args = {
-            record: args[0],
+            tenant: args[0],
+            record: args[1],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
+        tenant: typeof args.tenant === 'object'
+        ? args.tenant.uuid
+        : args.tenant,
         record: args.record,
     }
 
     return EditMedia.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
             .replace('{record}', parsedArgs.record.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -44,9 +45,9 @@ EditMedia.url = (args: { record: string | number } | [record: string | number ] 
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/media/{record}/edit'
+* @route '/admin/{tenant}/media/{record}/edit'
 */
-EditMedia.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+EditMedia.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditMedia.url(args, options),
     method: 'get',
 })
@@ -54,48 +55,11 @@ EditMedia.get = (args: { record: string | number } | [record: string | number ] 
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/media/{record}/edit'
+* @route '/admin/{tenant}/media/{record}/edit'
 */
-EditMedia.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+EditMedia.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditMedia.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
-* @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/media/{record}/edit'
-*/
-const EditMediaForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: EditMedia.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
-* @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/media/{record}/edit'
-*/
-EditMediaForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: EditMedia.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
-* @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/media/{record}/edit'
-*/
-EditMediaForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: EditMedia.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-EditMedia.form = EditMediaForm
 
 export default EditMedia

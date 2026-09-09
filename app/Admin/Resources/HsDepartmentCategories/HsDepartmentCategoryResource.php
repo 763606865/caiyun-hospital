@@ -5,6 +5,7 @@ namespace App\Admin\Resources\HsDepartmentCategories;
 use App\Admin\Resources\HsDepartmentCategories\Pages\CreateHsDepartmentCategory;
 use App\Admin\Resources\HsDepartmentCategories\Pages\EditHsDepartmentCategory;
 use App\Admin\Resources\HsDepartmentCategories\Pages\ListHsDepartmentCategories;
+use App\Admin\Support\TenantResource;
 use App\Models\HsDepartmentCategory;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -17,7 +18,6 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use UnitEnum;
 
-class HsDepartmentCategoryResource extends Resource
+class HsDepartmentCategoryResource extends TenantResource
 {
     protected static ?string $model = HsDepartmentCategory::class;
 

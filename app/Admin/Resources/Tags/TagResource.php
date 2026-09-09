@@ -21,6 +21,8 @@ use UnitEnum;
 
 class TagResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = Tag::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;

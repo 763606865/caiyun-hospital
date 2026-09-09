@@ -5,7 +5,7 @@ namespace App\Admin\Resources\HsDoctors;
 use App\Admin\Resources\HsDoctors\Pages\CreateHsDoctor;
 use App\Admin\Resources\HsDoctors\Pages\EditHsDoctor;
 use App\Admin\Resources\HsDoctors\Pages\ListHsDoctors;
-use App\Admin\Resources\HsDoctors\RelationManagers\ScheduleTemplatesRelationManager;
+use App\Admin\Support\TenantResource;
 use App\Models\HsDepartment;
 use App\Models\HsDoctor;
 use BackedEnum;
@@ -23,7 +23,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -39,7 +38,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use UnitEnum;
 
-class HsDoctorResource extends Resource
+class HsDoctorResource extends TenantResource
 {
     protected static ?string $model = HsDoctor::class;
 
@@ -66,7 +65,7 @@ class HsDoctorResource extends Resource
                     ->afterStateUpdated(fn ($state, $set, $record) => $record ?: $set('slug', self::makeSlug((string) $state))),
                 TextInput::make('slug')->label('Slug')->required()->unique(ignoreRecord: true)->maxLength(255),
                 TextInput::make('title')->label('职称')->maxLength(50),
-                TextInput::make('fee')->label('默认挂号费')->numeric()->prefix('¥')->default(0)->required(),
+                TextInput::make('fee')->label('默认诊费')->numeric()->prefix('¥')->default(0)->required(),
                 Select::make('departments')->label('所属科室')
                     ->relationship('departments', 'name', fn (Builder $query) => $query->orderBy('sort'))
                     ->multiple()
@@ -95,7 +94,7 @@ class HsDoctorResource extends Resource
                 RichEditor::make('body')->label('详细介绍')->columnSpanFull(),
             ]),
             Section::make('展示')->columnSpan(1)->schema([
-                FileUpload::make('avatar')->label('头像')->disk('public')->directory('hospital/doctors')->image()->avatar()->imageEditor(),
+                FileUpload::make('avatar')->label('头像')->disk('public')->directory('clinic/doctors')->image()->avatar()->imageEditor(),
                 TextInput::make('sort')->label('排序')->numeric()->default(0)->required(),
                 Toggle::make('is_enabled')->label('启用')->default(true),
             ]),
@@ -109,7 +108,7 @@ class HsDoctorResource extends Resource
             TextColumn::make('name')->label('姓名')->searchable()->sortable(),
             TextColumn::make('title')->label('职称')->toggleable(),
             TextColumn::make('departments.name')->label('科室')->badge()->limitList(3),
-            TextColumn::make('fee')->label('挂号费')->money('CNY'),
+            TextColumn::make('fee')->label('诊费')->money('CNY'),
             IconColumn::make('is_enabled')->label('启用')->boolean(),
             TextColumn::make('sort')->label('排序')->sortable(),
             TextColumn::make('updated_at')->label('更新时间')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
@@ -128,13 +127,6 @@ class HsDoctorResource extends Resource
                 ForceDeleteBulkAction::make(),
             ]),
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            ScheduleTemplatesRelationManager::class,
-        ];
     }
 
     public static function getEloquentQuery(): Builder

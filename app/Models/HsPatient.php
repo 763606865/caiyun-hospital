@@ -5,14 +5,13 @@ namespace App\Models;
 use App\Enums\HsPatientIdType;
 use App\Enums\HsPatientRelation;
 use App\Enums\UserGender;
+use App\Models\Concerns\BelongsToOrganization;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -34,7 +33,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at 更新时间
  * @property Carbon|null $deleted_at 软删除时间
  * @property-read User $user 所属用户
- * @property-read Collection<int, HsAppointment> $appointments 预约单
  */
 #[Table(name: 'hs_patients')]
 #[Fillable([
@@ -43,7 +41,7 @@ use Illuminate\Support\Carbon;
 ])]
 class HsPatient extends Model
 {
-    use SoftDeletes;
+    use BelongsToOrganization, SoftDeletes;
 
     /** @var list<string> */
     protected $appends = [
@@ -87,11 +85,5 @@ class HsPatient extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /** @return HasMany<HsAppointment, $this> */
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(HsAppointment::class, 'patient_id');
     }
 }

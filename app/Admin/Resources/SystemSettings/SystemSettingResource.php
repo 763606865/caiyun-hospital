@@ -16,6 +16,8 @@ use Filament\Tables\Table;
 
 class SystemSettingResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = SystemSetting::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;

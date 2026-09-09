@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToOrganization;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -29,8 +30,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at 更新时间
  * @property Carbon|null $deleted_at 软删除时间
  * @property-read Collection<int, HsDepartment> $departments 下属科室
- * @property-read Collection<int, HsSchedule> $schedules 出诊排班
- * @property-read Collection<int, HsAppointment> $appointments 预约单
  *
  * @method static Builder<static> enabled() 只查询已启用的院区
  */
@@ -41,7 +40,7 @@ use Illuminate\Support\Carbon;
 ])]
 class HsCampus extends Model
 {
-    use SoftDeletes;
+    use BelongsToOrganization, SoftDeletes;
 
     /** @return array<string, string> */
     protected function casts(): array
@@ -57,18 +56,6 @@ class HsCampus extends Model
     public function departments(): HasMany
     {
         return $this->hasMany(HsDepartment::class, 'campus_id')->orderBy('sort');
-    }
-
-    /** @return HasMany<HsSchedule, $this> */
-    public function schedules(): HasMany
-    {
-        return $this->hasMany(HsSchedule::class, 'campus_id');
-    }
-
-    /** @return HasMany<HsAppointment, $this> */
-    public function appointments(): HasMany
-    {
-        return $this->hasMany(HsAppointment::class, 'campus_id');
     }
 
     /**

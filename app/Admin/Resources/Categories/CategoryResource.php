@@ -27,6 +27,8 @@ use UnitEnum;
 
 class CategoryResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = Category::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolder;

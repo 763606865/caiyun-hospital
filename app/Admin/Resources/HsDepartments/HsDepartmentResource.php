@@ -5,6 +5,7 @@ namespace App\Admin\Resources\HsDepartments;
 use App\Admin\Resources\HsDepartments\Pages\CreateHsDepartment;
 use App\Admin\Resources\HsDepartments\Pages\EditHsDepartment;
 use App\Admin\Resources\HsDepartments\Pages\ListHsDepartments;
+use App\Admin\Support\TenantResource;
 use App\Models\HsDepartment;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -21,7 +22,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use UnitEnum;
 
-class HsDepartmentResource extends Resource
+class HsDepartmentResource extends TenantResource
 {
     protected static ?string $model = HsDepartment::class;
 
@@ -63,7 +63,7 @@ class HsDepartmentResource extends Resource
                     ->relationship('category', 'name', fn (Builder $query) => $query->where('is_enabled', true)->orderBy('sort'))
                     ->searchable()
                     ->preload()
-                    ->helperText('挂号页左侧分组，请先在「科室分类」中维护'),
+                    ->helperText('请先在「科室分类」中维护'),
                 TextInput::make('name')->label('名称')->required()->maxLength(255)
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn ($state, $set, $record) => $record ?: $set('slug', self::makeSlug((string) $state))),
@@ -74,10 +74,8 @@ class HsDepartmentResource extends Resource
                 RichEditor::make('body')->label('详细介绍')->columnSpanFull(),
             ]),
             Section::make('展示')->columnSpan(1)->schema([
-                FileUpload::make('cover')->label('封面')->disk('public')->directory('hospital/departments')->image()->imageEditor(),
+                FileUpload::make('cover')->label('封面')->disk('public')->directory('clinic/departments')->image()->imageEditor(),
                 TextInput::make('sort')->label('排序')->numeric()->default(0)->required(),
-                Toggle::make('is_featured')->label('常挂科室')->default(false)
-                    ->helperText('首页「常挂科室」展示'),
                 Toggle::make('is_enabled')->label('启用')->default(true),
             ]),
         ]);
@@ -92,7 +90,6 @@ class HsDepartmentResource extends Resource
             TextColumn::make('campus.name')->label('院区')->sortable(),
             TextColumn::make('location')->label('位置')->toggleable(),
             TextColumn::make('doctors_count')->label('医生数')->counts('doctors'),
-            IconColumn::make('is_featured')->label('常挂')->boolean()->toggleable(),
             IconColumn::make('is_enabled')->label('启用')->boolean(),
             TextColumn::make('sort')->label('排序')->sortable(),
             TextColumn::make('updated_at')->label('更新时间')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),

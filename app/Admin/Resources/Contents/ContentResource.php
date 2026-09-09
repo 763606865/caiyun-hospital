@@ -43,6 +43,8 @@ use UnitEnum;
 
 class ContentResource extends Resource
 {
+    protected static bool $isScopedToTenant = false;
+
     protected static ?string $model = Content::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;

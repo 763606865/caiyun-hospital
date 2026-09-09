@@ -1,83 +1,70 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
 * @see app/Admin/Resources/Tags/Pages/ListTags.php:7
-* @route '/admin/tags'
+* @route '/admin/{tenant}/tags'
 */
-const ListTags = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ListTags.url(options),
+const ListTags = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListTags.url(args, options),
     method: 'get',
 })
 
 ListTags.definition = {
     methods: ["get","head"],
-    url: '/admin/tags',
+    url: '/admin/{tenant}/tags',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
 * @see app/Admin/Resources/Tags/Pages/ListTags.php:7
-* @route '/admin/tags'
+* @route '/admin/{tenant}/tags'
 */
-ListTags.url = (options?: RouteQueryOptions) => {
-    return ListTags.definition.url + queryParams(options)
+ListTags.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { tenant: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
+        args = { tenant: args.uuid }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            tenant: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        tenant: typeof args.tenant === 'object'
+        ? args.tenant.uuid
+        : args.tenant,
+    }
+
+    return ListTags.definition.url
+            .replace('{tenant}', parsedArgs.tenant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
 * @see app/Admin/Resources/Tags/Pages/ListTags.php:7
-* @route '/admin/tags'
+* @route '/admin/{tenant}/tags'
 */
-ListTags.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ListTags.url(options),
+ListTags.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListTags.url(args, options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
 * @see app/Admin/Resources/Tags/Pages/ListTags.php:7
-* @route '/admin/tags'
+* @route '/admin/{tenant}/tags'
 */
-ListTags.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: ListTags.url(options),
+ListTags.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ListTags.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
-* @see app/Admin/Resources/Tags/Pages/ListTags.php:7
-* @route '/admin/tags'
-*/
-const ListTagsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListTags.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
-* @see app/Admin/Resources/Tags/Pages/ListTags.php:7
-* @route '/admin/tags'
-*/
-ListTagsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListTags.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
-* @see app/Admin/Resources/Tags/Pages/ListTags.php:7
-* @route '/admin/tags'
-*/
-ListTagsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListTags.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-ListTags.form = ListTagsForm
 
 export default ListTags

@@ -2,6 +2,8 @@
 
 namespace App\Admin;
 
+use App\Http\Middleware\SetTenantContext;
+use App\Models\Organization;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -30,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->authGuard('admin')
             ->authPasswordBroker('admin_users')
+            ->tenant(Organization::class, 'uuid')
             ->brandName(config('app.name').' 管理后台')
             ->colors([
                 'primary' => Color::Blue,
@@ -56,6 +59,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->tenantMiddleware([
+                SetTenantContext::class,
+            ], isPersistent: true);
     }
 }
