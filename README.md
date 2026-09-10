@@ -142,7 +142,8 @@ php artisan migrate
 ```bash
 supervisorctl reread
 supervisorctl update
-supervisorctl restart caiyun-laravel-horizon:
+supervisorctl restart caiyun-hospital-horizon:
+supervisorctl restart caiyun-hospital-octane:
 supervisorctl status
 ```
 
