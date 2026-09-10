@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
 * @see app/Admin/Resources/Tags/Pages/ListTags.php:7
@@ -66,5 +66,42 @@ ListTags.head = (args: { tenant: string | number | { uuid: string | number } } |
     url: ListTags.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
+* @see app/Admin/Resources/Tags/Pages/ListTags.php:7
+* @route '/admin/{tenant}/tags'
+*/
+const ListTagsForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListTags.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
+* @see app/Admin/Resources/Tags/Pages/ListTags.php:7
+* @route '/admin/{tenant}/tags'
+*/
+ListTagsForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListTags.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Tags\Pages\ListTags::__invoke
+* @see app/Admin/Resources/Tags/Pages/ListTags.php:7
+* @route '/admin/{tenant}/tags'
+*/
+ListTagsForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListTags.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+ListTags.form = ListTagsForm
 
 export default ListTags

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
@@ -66,6 +66,43 @@ index.head = (args: { tenant: string | number | { uuid: string | number } } | [t
     url: index.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
+* @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
+* @route '/admin/{tenant}/categories'
+*/
+const indexForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
+* @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
+* @route '/admin/{tenant}/categories'
+*/
+indexForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
+* @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
+* @route '/admin/{tenant}/categories'
+*/
+indexForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Admin\Resources\Categories\Pages\CreateCategory::__invoke
@@ -136,6 +173,43 @@ create.head = (args: { tenant: string | number | { uuid: string | number } } | [
 })
 
 /**
+* @see \App\Admin\Resources\Categories\Pages\CreateCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/CreateCategory.php:7
+* @route '/admin/{tenant}/categories/create'
+*/
+const createForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\CreateCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/CreateCategory.php:7
+* @route '/admin/{tenant}/categories/create'
+*/
+createForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\CreateCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/CreateCategory.php:7
+* @route '/admin/{tenant}/categories/create'
+*/
+createForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
 * @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
 * @route '/admin/{tenant}/categories/{record}/edit'
@@ -197,6 +271,43 @@ edit.head = (args: { tenant: string | number | { uuid: string | number }, record
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
+* @route '/admin/{tenant}/categories/{record}/edit'
+*/
+const editForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
+* @route '/admin/{tenant}/categories/{record}/edit'
+*/
+editForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
+* @route '/admin/{tenant}/categories/{record}/edit'
+*/
+editForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 const categories = {
     index: Object.assign(index, index),

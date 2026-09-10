@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
@@ -66,5 +66,42 @@ CreateContent.head = (args: { tenant: string | number | { uuid: string | number 
     url: CreateContent.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
+* @route '/admin/{tenant}/contents/create'
+*/
+const CreateContentForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: CreateContent.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
+* @route '/admin/{tenant}/contents/create'
+*/
+CreateContentForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: CreateContent.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
+* @route '/admin/{tenant}/contents/create'
+*/
+CreateContentForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: CreateContent.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+CreateContent.form = CreateContentForm
 
 export default CreateContent

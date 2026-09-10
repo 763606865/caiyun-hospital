@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
@@ -66,5 +66,42 @@ CreateTag.head = (args: { tenant: string | number | { uuid: string | number } } 
     url: CreateTag.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
+* @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
+* @route '/admin/{tenant}/tags/create'
+*/
+const CreateTagForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: CreateTag.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
+* @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
+* @route '/admin/{tenant}/tags/create'
+*/
+CreateTagForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: CreateTag.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Tags\Pages\CreateTag::__invoke
+* @see app/Admin/Resources/Tags/Pages/CreateTag.php:7
+* @route '/admin/{tenant}/tags/create'
+*/
+CreateTagForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: CreateTag.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+CreateTag.form = CreateTagForm
 
 export default CreateTag

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
 * @see app/Admin/Resources/Contents/Pages/ListContents.php:7
@@ -66,6 +66,43 @@ index.head = (args: { tenant: string | number | { uuid: string | number } } | [t
     url: index.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
+* @see app/Admin/Resources/Contents/Pages/ListContents.php:7
+* @route '/admin/{tenant}/contents'
+*/
+const indexForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
+* @see app/Admin/Resources/Contents/Pages/ListContents.php:7
+* @route '/admin/{tenant}/contents'
+*/
+indexForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
+* @see app/Admin/Resources/Contents/Pages/ListContents.php:7
+* @route '/admin/{tenant}/contents'
+*/
+indexForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
@@ -136,6 +173,43 @@ create.head = (args: { tenant: string | number | { uuid: string | number } } | [
 })
 
 /**
+* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
+* @route '/admin/{tenant}/contents/create'
+*/
+const createForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
+* @route '/admin/{tenant}/contents/create'
+*/
+createForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\CreateContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/CreateContent.php:7
+* @route '/admin/{tenant}/contents/create'
+*/
+createForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
 * @route '/admin/{tenant}/contents/{record}/edit'
@@ -197,6 +271,43 @@ edit.head = (args: { tenant: string | number | { uuid: string | number }, record
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/EditContent.php:7
+* @route '/admin/{tenant}/contents/{record}/edit'
+*/
+const editForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/EditContent.php:7
+* @route '/admin/{tenant}/contents/{record}/edit'
+*/
+editForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/EditContent.php:7
+* @route '/admin/{tenant}/contents/{record}/edit'
+*/
+editForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 const contents = {
     index: Object.assign(index, index),

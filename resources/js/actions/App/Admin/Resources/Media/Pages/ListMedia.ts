@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
@@ -66,5 +66,42 @@ ListMedia.head = (args: { tenant: string | number | { uuid: string | number } } 
     url: ListMedia.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
+* @see app/Admin/Resources/Media/Pages/ListMedia.php:7
+* @route '/admin/{tenant}/media'
+*/
+const ListMediaForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListMedia.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
+* @see app/Admin/Resources/Media/Pages/ListMedia.php:7
+* @route '/admin/{tenant}/media'
+*/
+ListMediaForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListMedia.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
+* @see app/Admin/Resources/Media/Pages/ListMedia.php:7
+* @route '/admin/{tenant}/media'
+*/
+ListMediaForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListMedia.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+ListMedia.form = ListMediaForm
 
 export default ListMedia

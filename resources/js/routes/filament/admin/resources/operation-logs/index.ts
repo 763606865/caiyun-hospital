@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
 * @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
@@ -66,6 +66,43 @@ index.head = (args: { tenant: string | number | { uuid: string | number } } | [t
     url: index.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
+* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
+* @route '/admin/{tenant}/operation-logs'
+*/
+const indexForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
+* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
+* @route '/admin/{tenant}/operation-logs'
+*/
+indexForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
+* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
+* @route '/admin/{tenant}/operation-logs'
+*/
+indexForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 const operationLogs = {
     index: Object.assign(index, index),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
@@ -61,5 +61,42 @@ EditContent.head = (args: { tenant: string | number | { uuid: string | number },
     url: EditContent.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/EditContent.php:7
+* @route '/admin/{tenant}/contents/{record}/edit'
+*/
+const EditContentForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditContent.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/EditContent.php:7
+* @route '/admin/{tenant}/contents/{record}/edit'
+*/
+EditContentForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditContent.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
+* @see app/Admin/Resources/Contents/Pages/EditContent.php:7
+* @route '/admin/{tenant}/contents/{record}/edit'
+*/
+EditContentForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditContent.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+EditContent.form = EditContentForm
 
 export default EditContent

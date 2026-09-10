@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
 * @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
@@ -61,5 +61,42 @@ EditCategory.head = (args: { tenant: string | number | { uuid: string | number }
     url: EditCategory.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
+* @route '/admin/{tenant}/categories/{record}/edit'
+*/
+const EditCategoryForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditCategory.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
+* @route '/admin/{tenant}/categories/{record}/edit'
+*/
+EditCategoryForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditCategory.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\EditCategory::__invoke
+* @see app/Admin/Resources/Categories/Pages/EditCategory.php:7
+* @route '/admin/{tenant}/categories/{record}/edit'
+*/
+EditCategoryForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditCategory.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+EditCategory.form = EditCategoryForm
 
 export default EditCategory

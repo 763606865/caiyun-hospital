@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
@@ -66,5 +66,42 @@ ListCategories.head = (args: { tenant: string | number | { uuid: string | number
     url: ListCategories.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
+* @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
+* @route '/admin/{tenant}/categories'
+*/
+const ListCategoriesForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListCategories.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
+* @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
+* @route '/admin/{tenant}/categories'
+*/
+ListCategoriesForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListCategories.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
+* @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
+* @route '/admin/{tenant}/categories'
+*/
+ListCategoriesForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListCategories.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+ListCategories.form = ListCategoriesForm
 
 export default ListCategories

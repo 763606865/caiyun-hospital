@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
@@ -61,5 +61,42 @@ EditMedia.head = (args: { tenant: string | number | { uuid: string | number }, r
     url: EditMedia.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
+* @see app/Admin/Resources/Media/Pages/EditMedia.php:7
+* @route '/admin/{tenant}/media/{record}/edit'
+*/
+const EditMediaForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditMedia.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
+* @see app/Admin/Resources/Media/Pages/EditMedia.php:7
+* @route '/admin/{tenant}/media/{record}/edit'
+*/
+EditMediaForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditMedia.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
+* @see app/Admin/Resources/Media/Pages/EditMedia.php:7
+* @route '/admin/{tenant}/media/{record}/edit'
+*/
+EditMediaForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: EditMedia.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+EditMedia.form = EditMediaForm
 
 export default EditMedia

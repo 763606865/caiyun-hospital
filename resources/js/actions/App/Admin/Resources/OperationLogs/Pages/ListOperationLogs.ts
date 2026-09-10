@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
 * @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
@@ -66,5 +66,42 @@ ListOperationLogs.head = (args: { tenant: string | number | { uuid: string | num
     url: ListOperationLogs.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
+* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
+* @route '/admin/{tenant}/operation-logs'
+*/
+const ListOperationLogsForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListOperationLogs.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
+* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
+* @route '/admin/{tenant}/operation-logs'
+*/
+ListOperationLogsForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListOperationLogs.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\OperationLogs\Pages\ListOperationLogs::__invoke
+* @see app/Admin/Resources/OperationLogs/Pages/ListOperationLogs.php:7
+* @route '/admin/{tenant}/operation-logs'
+*/
+ListOperationLogsForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListOperationLogs.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+ListOperationLogs.form = ListOperationLogsForm
 
 export default ListOperationLogs

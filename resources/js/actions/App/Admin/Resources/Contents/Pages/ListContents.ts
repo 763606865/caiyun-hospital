@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
 * @see app/Admin/Resources/Contents/Pages/ListContents.php:7
@@ -66,5 +66,42 @@ ListContents.head = (args: { tenant: string | number | { uuid: string | number }
     url: ListContents.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
+* @see app/Admin/Resources/Contents/Pages/ListContents.php:7
+* @route '/admin/{tenant}/contents'
+*/
+const ListContentsForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListContents.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
+* @see app/Admin/Resources/Contents/Pages/ListContents.php:7
+* @route '/admin/{tenant}/contents'
+*/
+ListContentsForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListContents.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Admin\Resources\Contents\Pages\ListContents::__invoke
+* @see app/Admin/Resources/Contents/Pages/ListContents.php:7
+* @route '/admin/{tenant}/contents'
+*/
+ListContentsForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListContents.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+ListContents.form = ListContentsForm
 
 export default ListContents

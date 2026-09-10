@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\SitemapController::__invoke
 * @see app/Http/Controllers/SitemapController.php:10
@@ -42,5 +42,42 @@ SitemapController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
     url: SitemapController.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\SitemapController::__invoke
+* @see app/Http/Controllers/SitemapController.php:10
+* @route '/sitemap.xml'
+*/
+const SitemapControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: SitemapController.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SitemapController::__invoke
+* @see app/Http/Controllers/SitemapController.php:10
+* @route '/sitemap.xml'
+*/
+SitemapControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: SitemapController.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SitemapController::__invoke
+* @see app/Http/Controllers/SitemapController.php:10
+* @route '/sitemap.xml'
+*/
+SitemapControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: SitemapController.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+SitemapController.form = SitemapControllerForm
 
 export default SitemapController

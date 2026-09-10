@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Api\Controllers\CmsController::categories
 * @see app/Api/Controllers/CmsController.php:13
@@ -44,6 +44,43 @@ categories.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Api\Controllers\CmsController::categories
+* @see app/Api/Controllers/CmsController.php:13
+* @route '/api/cms/categories'
+*/
+const categoriesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: categories.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Api\Controllers\CmsController::categories
+* @see app/Api/Controllers/CmsController.php:13
+* @route '/api/cms/categories'
+*/
+categoriesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: categories.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Api\Controllers\CmsController::categories
+* @see app/Api/Controllers/CmsController.php:13
+* @route '/api/cms/categories'
+*/
+categoriesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: categories.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+categories.form = categoriesForm
+
+/**
 * @see \App\Api\Controllers\CmsController::index
 * @see app/Api/Controllers/CmsController.php:22
 * @route '/api/cms/contents'
@@ -86,6 +123,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Api\Controllers\CmsController::index
+* @see app/Api/Controllers/CmsController.php:22
+* @route '/api/cms/contents'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Api\Controllers\CmsController::index
+* @see app/Api/Controllers/CmsController.php:22
+* @route '/api/cms/contents'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Api\Controllers\CmsController::index
+* @see app/Api/Controllers/CmsController.php:22
+* @route '/api/cms/contents'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Api\Controllers\CmsController::show
@@ -148,6 +222,43 @@ show.head = (args: { slug: string | number } | [slug: string | number ] | string
     url: show.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Api\Controllers\CmsController::show
+* @see app/Api/Controllers/CmsController.php:43
+* @route '/api/cms/contents/{slug}'
+*/
+const showForm = (args: { slug: string | number } | [slug: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Api\Controllers\CmsController::show
+* @see app/Api/Controllers/CmsController.php:43
+* @route '/api/cms/contents/{slug}'
+*/
+showForm.get = (args: { slug: string | number } | [slug: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Api\Controllers\CmsController::show
+* @see app/Api/Controllers/CmsController.php:43
+* @route '/api/cms/contents/{slug}'
+*/
+showForm.head = (args: { slug: string | number } | [slug: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
 
 const CmsController = { categories, index, show }
 
