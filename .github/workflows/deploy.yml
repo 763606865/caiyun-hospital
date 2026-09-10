@@ -103,9 +103,19 @@ jobs:
 
       - name: Configure SSH
         env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
+          : "${DEPLOY_HOST:?DEPLOY_HOST is required}"
+          : "${DEPLOY_PORT:?DEPLOY_PORT is required}"
+          : "${DEPLOY_USER:?DEPLOY_USER is required}"
+          : "${DEPLOY_PATH:?DEPLOY_PATH is required}"
+          : "${DEPLOY_SSH_KEY:?DEPLOY_SSH_KEY is required}"
+          : "${DEPLOY_KNOWN_HOSTS:?DEPLOY_KNOWN_HOSTS is required}"
           install -m 700 -d ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
@@ -120,7 +130,7 @@ jobs:
         run: |
           scp -i ~/.ssh/deploy_key -P "${DEPLOY_PORT:-22}" \
             release.tar.gz \
-            "${DEPLOY_USER}@${DEPLOY_HOST}:/tmp/caiyun-oa-${GITHUB_SHA}.tar.gz"
+            "${DEPLOY_USER}@${DEPLOY_HOST}:/tmp/caiyun-hospital-${GITHUB_SHA}.tar.gz"
 
       - name: Activate release
         env:
@@ -131,5 +141,5 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -p "${DEPLOY_PORT:-22}" \
             "${DEPLOY_USER}@${DEPLOY_HOST}" \
-            "DEPLOY_PATH='${DEPLOY_PATH}' RELEASE_ID='${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}' ARCHIVE='/tmp/caiyun-oa-${GITHUB_SHA}.tar.gz' bash -s" \
+            "DEPLOY_PATH='${DEPLOY_PATH}' RELEASE_ID='${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}' ARCHIVE='/tmp/caiyun-hospital-${GITHUB_SHA}.tar.gz' bash -s" \
             < .github/scripts/deploy.sh
