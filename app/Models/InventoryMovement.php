@@ -18,21 +18,25 @@ class InventoryMovement extends Model
         return ['occurred_at' => 'datetime'];
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return BelongsTo<Drug, $this> */
     public function drug(): BelongsTo
     {
         return $this->belongsTo(Drug::class);
     }
 
+    /** @return BelongsTo<InventoryBatch, $this> */
     public function batch(): BelongsTo
     {
         return $this->belongsTo(InventoryBatch::class, 'inventory_batch_id');
     }
 
+    /** @return MorphTo<Model, $this> */
     public function source(): MorphTo
     {
         return $this->morphTo();

@@ -62,6 +62,7 @@ class AdminUser extends Authenticatable implements FilamentUser, HasDefaultTenan
         return $this->belongsToMany(Organization::class, 'organization_members')->withTimestamps();
     }
 
+    /** @return Collection<int, Organization> */
     public function getTenants(Panel $panel): Collection
     {
         return $this->organizations()->where('organizations.status', 'active')->get();

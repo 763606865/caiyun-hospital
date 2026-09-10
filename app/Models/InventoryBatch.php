@@ -17,11 +17,13 @@ class InventoryBatch extends Model
         return ['produced_at' => 'date', 'expires_at' => 'date'];
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return BelongsTo<Drug, $this> */
     public function drug(): BelongsTo
     {
         return $this->belongsTo(Drug::class);

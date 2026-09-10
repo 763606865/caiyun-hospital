@@ -16,8 +16,11 @@ class SetTenantContext
         $tenant = Filament::getTenant();
 
         if (! $tenant instanceof Organization && $request->route()?->hasParameter('tenant')) {
+            $tenantKey = $request->route()->parameter('tenant');
+            abort_unless(is_string($tenantKey), 404);
+
             $tenant = Filament::getCurrentOrDefaultPanel()->getTenant(
-                $request->route()->parameter('tenant'),
+                $tenantKey,
             );
 
             $user = Filament::auth()->user();

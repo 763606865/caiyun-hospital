@@ -12,11 +12,13 @@ class PrescriptionItem extends Model
 {
     use BelongsToOrganization;
 
+    /** @return BelongsTo<Prescription, $this> */
     public function prescription(): BelongsTo
     {
         return $this->belongsTo(Prescription::class);
     }
 
+    /** @return BelongsTo<Drug, $this> */
     public function drug(): BelongsTo
     {
         return $this->belongsTo(Drug::class);

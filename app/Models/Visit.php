@@ -20,31 +20,37 @@ class Visit extends Model
         return ['registered_at' => 'datetime', 'started_at' => 'datetime', 'completed_at' => 'datetime', 'cancelled_at' => 'datetime'];
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return BelongsTo<HsPatient, $this> */
     public function patient(): BelongsTo
     {
         return $this->belongsTo(HsPatient::class, 'patient_id');
     }
 
+    /** @return BelongsTo<HsDoctor, $this> */
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(HsDoctor::class, 'doctor_id');
     }
 
+    /** @return BelongsTo<HsDepartment, $this> */
     public function department(): BelongsTo
     {
         return $this->belongsTo(HsDepartment::class, 'department_id');
     }
 
+    /** @return HasOne<MedicalRecord, $this> */
     public function medicalRecord(): HasOne
     {
         return $this->hasOne(MedicalRecord::class);
     }
 
+    /** @return HasMany<Prescription, $this> */
     public function prescriptions(): HasMany
     {
         return $this->hasMany(Prescription::class);

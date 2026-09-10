@@ -27,9 +27,9 @@ return new class extends Migration
             $table->foreignId('category_id')
                 ->nullable()
                 ->after('slug')
+                ->comment('所属科室分类')
                 ->constrained('hs_department_categories')
-                ->nullOnDelete()
-                ->comment('所属科室分类');
+                ->nullOnDelete();
         });
 
         Schema::table('hs_departments', function (Blueprint $table): void {

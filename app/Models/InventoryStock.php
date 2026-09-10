@@ -17,11 +17,13 @@ class InventoryStock extends Model
         return ['last_moved_at' => 'datetime'];
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return BelongsTo<Drug, $this> */
     public function drug(): BelongsTo
     {
         return $this->belongsTo(Drug::class);

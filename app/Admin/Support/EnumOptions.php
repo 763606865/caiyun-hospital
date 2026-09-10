@@ -7,7 +7,7 @@ use BackedEnum;
 final class EnumOptions
 {
     /**
-     * @param  array<int, BackedEnum&object{label(): string}>  $cases
+     * @param  list<BackedEnum>  $cases
      * @return array<int|string, string>
      */
     public static function from(array $cases): array
@@ -15,7 +15,11 @@ final class EnumOptions
         $options = [];
 
         foreach ($cases as $case) {
-            $options[$case->value] = $case->label();
+            $label = [$case, 'label'];
+            $options[$case->value] = match (true) {
+                is_callable($label) => (string) $label(),
+                default => $case->name,
+            };
         }
 
         return $options;

@@ -17,16 +17,19 @@ class PaymentTransaction extends Model
         return ['channel_payload' => 'array', 'completed_at' => 'datetime'];
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return BelongsTo<ChargeOrder, $this> */
     public function chargeOrder(): BelongsTo
     {
         return $this->belongsTo(ChargeOrder::class);
     }
 
+    /** @return BelongsTo<self, $this> */
     public function relatedTransaction(): BelongsTo
     {
         return $this->belongsTo(self::class, 'related_transaction_id');

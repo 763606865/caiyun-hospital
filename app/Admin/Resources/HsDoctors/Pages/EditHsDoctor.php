@@ -49,7 +49,9 @@ class EditHsDoctor extends EditRecord
 
     public function getTitle(): string|Htmlable
     {
-        return '配置 · '.$this->getRecordTitle();
+        $recordTitle = $this->getRecordTitle();
+
+        return '配置 · '.($recordTitle instanceof Htmlable ? $recordTitle->toHtml() : $recordTitle);
     }
 
     public function hasCombinedRelationManagerTabsWithContent(): bool

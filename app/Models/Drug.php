@@ -18,6 +18,7 @@ class Drug extends Model
         return ['requires_batch' => 'boolean', 'is_enabled' => 'boolean'];
     }
 
+    /** @return HasMany<InventoryStock, $this> */
     public function stocks(): HasMany
     {
         return $this->hasMany(InventoryStock::class);

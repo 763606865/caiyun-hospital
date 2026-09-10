@@ -13,11 +13,13 @@ class ChargeItem extends Model
 {
     use BelongsToOrganization;
 
+    /** @return BelongsTo<ChargeOrder, $this> */
     public function chargeOrder(): BelongsTo
     {
         return $this->belongsTo(ChargeOrder::class);
     }
 
+    /** @return MorphTo<Model, $this> */
     public function source(): MorphTo
     {
         return $this->morphTo();

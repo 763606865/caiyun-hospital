@@ -30,7 +30,7 @@ return new class extends Migration
 
         Schema::create('hs_departments', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('campus_id')->constrained('hs_campuses')->cascadeOnDelete()->comment('所属院区');
+            $table->foreignId('campus_id')->comment('所属院区')->constrained('hs_campuses')->cascadeOnDelete();
             $table->string('name')->comment('科室名称');
             $table->string('slug')->unique()->comment('URL 标识');
             $table->string('summary', 500)->nullable()->comment('简介');

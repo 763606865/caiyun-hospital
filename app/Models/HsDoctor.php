@@ -4,9 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\BelongsToOrganization;
 use App\Models\Pivot\HsDoctorDepartment;
-use App\Observers\HsDoctorObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,7 +37,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static> enabled() 只查询已启用的医生
  */
 #[Table(name: 'hs_doctors')]
-#[ObservedBy([HsDoctorObserver::class])]
 #[Fillable([
     'name', 'slug', 'title', 'specialties', 'summary', 'body',
     'avatar', 'fee', 'sort', 'is_enabled',

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('hs_patients', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->comment('所属用户');
+            $table->foreignId('user_id')->comment('所属用户')->constrained('users')->cascadeOnDelete();
             $table->string('name')->comment('患者姓名');
             $table->string('id_type', 20)->default('id_card')->comment('证件类型');
             $table->string('id_number', 64)->comment('证件号码');

@@ -131,7 +131,7 @@ class PatientController extends Controller
                 Rule::unique('hs_patients', 'id_number')
                     ->where(fn ($query) => $query
                         ->where('user_id', $userId)
-                        ->where('id_type', $request->input('id_type', $patient?->id_type?->value ?? HsPatientIdType::IdCard->value))
+                        ->where('id_type', $request->input('id_type', $patient?->id_type->value ?? HsPatientIdType::IdCard->value))
                         ->whereNull('deleted_at'))
                     ->ignore($patient?->id),
             ],

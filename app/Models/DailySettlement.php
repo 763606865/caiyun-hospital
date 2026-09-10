@@ -17,6 +17,7 @@ class DailySettlement extends Model
         return ['business_date' => 'date', 'payment_method_summary' => 'array', 'difference_details' => 'array', 'settled_at' => 'datetime'];
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);

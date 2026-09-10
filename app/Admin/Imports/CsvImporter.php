@@ -169,7 +169,7 @@ abstract class CsvImporter
         foreach ($dropdownOptions as $title => $options) {
             $sheet->setCellValue([$column, 1], $title);
 
-            foreach (array_values($options) as $rowIndex => $option) {
+            foreach ($options as $rowIndex => $option) {
                 $sheet->setCellValue([$column, $rowIndex + 2], $option);
             }
 
@@ -362,11 +362,11 @@ abstract class CsvImporter
      */
     protected static function campusDropdownLabels(): array
     {
-        return HsCampus::query()
+        return array_values(HsCampus::query()
             ->orderBy('sort')
             ->get(['name', 'slug'])
             ->map(fn ($campus): string => "{$campus->name} [{$campus->slug}]")
-            ->all();
+            ->all());
     }
 
     /**
@@ -374,11 +374,11 @@ abstract class CsvImporter
      */
     protected static function departmentDropdownLabels(): array
     {
-        return HsDepartment::query()
+        return array_values(HsDepartment::query()
             ->orderBy('sort')
             ->get(['name', 'slug'])
             ->map(fn ($department): string => "{$department->name} [{$department->slug}]")
-            ->all();
+            ->all());
     }
 
     /**
@@ -386,13 +386,13 @@ abstract class CsvImporter
      */
     protected static function departmentCategoryDropdownLabels(): array
     {
-        return HsDepartmentCategory::query()
+        return array_values(HsDepartmentCategory::query()
             ->enabled()
             ->orderBy('sort')
             ->orderBy('id')
             ->get(['name', 'slug'])
             ->map(fn (HsDepartmentCategory $category): string => "{$category->name} [{$category->slug}]")
-            ->all();
+            ->all());
     }
 
     protected function resolveLocalPath(TemporaryUploadedFile|UploadedFile|string $file): string

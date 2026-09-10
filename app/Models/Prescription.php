@@ -19,26 +19,31 @@ class Prescription extends Model
         return ['issued_at' => 'datetime', 'dispensed_at' => 'datetime'];
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return BelongsTo<Visit, $this> */
     public function visit(): BelongsTo
     {
         return $this->belongsTo(Visit::class);
     }
 
+    /** @return BelongsTo<HsPatient, $this> */
     public function patient(): BelongsTo
     {
         return $this->belongsTo(HsPatient::class, 'patient_id');
     }
 
+    /** @return BelongsTo<HsDoctor, $this> */
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(HsDoctor::class, 'doctor_id');
     }
 
+    /** @return HasMany<PrescriptionItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(PrescriptionItem::class);
