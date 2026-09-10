@@ -150,10 +150,9 @@ jobs:
             --exclude='.github' \
             --exclude='.env' \
             --exclude='node_modules' \
-            --exclude='release.tar.gz' \
             --exclude='storage' \
             --exclude='tests' \
-            -czf release.tar.gz .
+            -czf "${RUNNER_TEMP}/caiyun-hospital-release.tar.gz" .
 
       - name: Configure SSH
         env:
@@ -183,7 +182,7 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
         run: |
           scp -i ~/.ssh/deploy_key -P "${DEPLOY_PORT:-22}" \
-            release.tar.gz \
+            "${RUNNER_TEMP}/caiyun-hospital-release.tar.gz" \
             "${DEPLOY_USER}@${DEPLOY_HOST}:/tmp/caiyun-hospital-${GITHUB_SHA}.tar.gz"
 
       - name: Activate release
