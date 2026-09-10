@@ -2,42 +2,41 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Admin\Resources\Tags\Pages\EditTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/EditTag.php:7
-* @route '/admin/{tenant}/tags/{record}/edit'
+* @route '/admin/tags/{record}/edit'
 */
-const EditTag = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const EditTag = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditTag.url(args, options),
     method: 'get',
 })
 
 EditTag.definition = {
     methods: ["get","head"],
-    url: '/admin/{tenant}/tags/{record}/edit',
+    url: '/admin/tags/{record}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Tags\Pages\EditTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/EditTag.php:7
-* @route '/admin/{tenant}/tags/{record}/edit'
+* @route '/admin/tags/{record}/edit'
 */
-EditTag.url = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions) => {
+EditTag.url = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { record: args }
+    }
+
     if (Array.isArray(args)) {
         args = {
-            tenant: args[0],
-            record: args[1],
+            record: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        tenant: typeof args.tenant === 'object'
-        ? args.tenant.uuid
-        : args.tenant,
         record: args.record,
     }
 
     return EditTag.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
             .replace('{record}', parsedArgs.record.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -45,9 +44,9 @@ EditTag.url = (args: { tenant: string | number | { uuid: string | number }, reco
 /**
 * @see \App\Admin\Resources\Tags\Pages\EditTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/EditTag.php:7
-* @route '/admin/{tenant}/tags/{record}/edit'
+* @route '/admin/tags/{record}/edit'
 */
-EditTag.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+EditTag.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditTag.url(args, options),
     method: 'get',
 })
@@ -55,9 +54,9 @@ EditTag.get = (args: { tenant: string | number | { uuid: string | number }, reco
 /**
 * @see \App\Admin\Resources\Tags\Pages\EditTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/EditTag.php:7
-* @route '/admin/{tenant}/tags/{record}/edit'
+* @route '/admin/tags/{record}/edit'
 */
-EditTag.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+EditTag.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditTag.url(args, options),
     method: 'head',
 })
@@ -65,9 +64,9 @@ EditTag.head = (args: { tenant: string | number | { uuid: string | number }, rec
 /**
 * @see \App\Admin\Resources\Tags\Pages\EditTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/EditTag.php:7
-* @route '/admin/{tenant}/tags/{record}/edit'
+* @route '/admin/tags/{record}/edit'
 */
-const EditTagForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const EditTagForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditTag.url(args, options),
     method: 'get',
 })
@@ -75,9 +74,9 @@ const EditTagForm = (args: { tenant: string | number | { uuid: string | number }
 /**
 * @see \App\Admin\Resources\Tags\Pages\EditTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/EditTag.php:7
-* @route '/admin/{tenant}/tags/{record}/edit'
+* @route '/admin/tags/{record}/edit'
 */
-EditTagForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+EditTagForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditTag.url(args, options),
     method: 'get',
 })
@@ -85,9 +84,9 @@ EditTagForm.get = (args: { tenant: string | number | { uuid: string | number }, 
 /**
 * @see \App\Admin\Resources\Tags\Pages\EditTag::__invoke
 * @see app/Admin/Resources/Tags/Pages/EditTag.php:7
-* @route '/admin/{tenant}/tags/{record}/edit'
+* @route '/admin/tags/{record}/edit'
 */
-EditTagForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+EditTagForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditTag.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',

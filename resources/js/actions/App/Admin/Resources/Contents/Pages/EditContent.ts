@@ -2,42 +2,41 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
-* @route '/admin/{tenant}/contents/{record}/edit'
+* @route '/admin/contents/{record}/edit'
 */
-const EditContent = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const EditContent = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditContent.url(args, options),
     method: 'get',
 })
 
 EditContent.definition = {
     methods: ["get","head"],
-    url: '/admin/{tenant}/contents/{record}/edit',
+    url: '/admin/contents/{record}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
-* @route '/admin/{tenant}/contents/{record}/edit'
+* @route '/admin/contents/{record}/edit'
 */
-EditContent.url = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions) => {
+EditContent.url = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { record: args }
+    }
+
     if (Array.isArray(args)) {
         args = {
-            tenant: args[0],
-            record: args[1],
+            record: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        tenant: typeof args.tenant === 'object'
-        ? args.tenant.uuid
-        : args.tenant,
         record: args.record,
     }
 
     return EditContent.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
             .replace('{record}', parsedArgs.record.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -45,9 +44,9 @@ EditContent.url = (args: { tenant: string | number | { uuid: string | number }, 
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
-* @route '/admin/{tenant}/contents/{record}/edit'
+* @route '/admin/contents/{record}/edit'
 */
-EditContent.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+EditContent.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditContent.url(args, options),
     method: 'get',
 })
@@ -55,9 +54,9 @@ EditContent.get = (args: { tenant: string | number | { uuid: string | number }, 
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
-* @route '/admin/{tenant}/contents/{record}/edit'
+* @route '/admin/contents/{record}/edit'
 */
-EditContent.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+EditContent.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditContent.url(args, options),
     method: 'head',
 })
@@ -65,9 +64,9 @@ EditContent.head = (args: { tenant: string | number | { uuid: string | number },
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
-* @route '/admin/{tenant}/contents/{record}/edit'
+* @route '/admin/contents/{record}/edit'
 */
-const EditContentForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const EditContentForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditContent.url(args, options),
     method: 'get',
 })
@@ -75,9 +74,9 @@ const EditContentForm = (args: { tenant: string | number | { uuid: string | numb
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
-* @route '/admin/{tenant}/contents/{record}/edit'
+* @route '/admin/contents/{record}/edit'
 */
-EditContentForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+EditContentForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditContent.url(args, options),
     method: 'get',
 })
@@ -85,9 +84,9 @@ EditContentForm.get = (args: { tenant: string | number | { uuid: string | number
 /**
 * @see \App\Admin\Resources\Contents\Pages\EditContent::__invoke
 * @see app/Admin/Resources/Contents/Pages/EditContent.php:7
-* @route '/admin/{tenant}/contents/{record}/edit'
+* @route '/admin/contents/{record}/edit'
 */
-EditContentForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+EditContentForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditContent.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',

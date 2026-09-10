@@ -3,14 +3,10 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasDefaultTenant;
-use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -35,7 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
 #[Table(name: 'admin_users')]
 #[Fillable(['name', 'email', 'password', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
-class AdminUser extends Authenticatable implements FilamentUser, HasDefaultTenant, HasTenants
+class AdminUser extends Authenticatable implements FilamentUser
 {
     use HasRoles, Notifiable;
 
@@ -60,21 +56,5 @@ class AdminUser extends Authenticatable implements FilamentUser, HasDefaultTenan
     public function organizations(): BelongsToMany
     {
         return $this->belongsToMany(Organization::class, 'organization_members')->withTimestamps();
-    }
-
-    /** @return Collection<int, Organization> */
-    public function getTenants(Panel $panel): Collection
-    {
-        return $this->organizations()->where('organizations.status', 'active')->get();
-    }
-
-    public function canAccessTenant(Model $tenant): bool
-    {
-        return $tenant instanceof Organization && $this->organizations()->whereKey($tenant)->exists();
-    }
-
-    public function getDefaultTenant(Panel $panel): ?Organization
-    {
-        return $this->organizations()->where('organizations.status', 'active')->first();
     }
 }

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\AdminUser;
-use App\Models\Branch;
 use App\Models\Organization;
 use Database\Seeders\AdminAuthorizationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +31,7 @@ class AdminPanelTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_super_admin_can_access_all_management_resources(): void
+    public function test_super_admin_can_access_platform_management_resources(): void
     {
         $this->seed(AdminAuthorizationSeeder::class);
 
@@ -48,31 +47,15 @@ class AdminPanelTest extends TestCase
             'code' => 'test-clinic',
             'status' => 'active',
         ]);
-        $organization->organizationMembers()->create([
-            'admin_user_id' => $admin->id,
-            'display_name' => $admin->name,
-            'role' => 'owner',
-            'status' => 'active',
-        ]);
-        Branch::query()->create(['organization_id' => $organization->id, 'name' => '本组织门店', 'code' => 'own']);
-        $otherOrganization = Organization::query()->create(['name' => '其他诊所', 'code' => 'other', 'status' => 'active']);
-        Branch::query()->create(['organization_id' => $otherOrganization->id, 'name' => '其他组织门店', 'code' => 'other']);
 
         $this->actingAs($admin, 'admin');
-        $baseUrl = '/admin/'.$organization->uuid;
 
-        $this->get($baseUrl)->assertOk();
-        $this->get($baseUrl.'/branches')->assertOk();
-        $this->get($baseUrl.'/organization-members')->assertOk();
-        $this->get($baseUrl.'/visits')->assertOk();
-        $this->get($baseUrl.'/medical-records')->assertOk();
-        $this->get($baseUrl.'/prescriptions')->assertOk();
-        $this->get($baseUrl.'/drugs')->assertOk();
-        $this->get($baseUrl.'/inventory-stocks')->assertOk();
-        $this->get($baseUrl.'/charge-orders')->assertOk();
-        $this->get($baseUrl.'/daily-settlements')->assertOk();
-
-        $this->get($baseUrl.'/branches')->assertSee('本组织门店')->assertDontSee('其他组织门店');
+        $this->get('/admin')->assertOk();
+        $this->get('/admin/organizations')->assertOk()->assertSee($organization->name);
+        $this->get('/admin/consultation-requests')->assertOk();
+        $this->get('/admin/admin-users')->assertOk();
+        $this->get('/admin/contents')->assertOk();
+        $this->get('/admin/visits')->assertNotFound();
     }
 
     public function test_admin_create_command_creates_a_super_admin(): void
@@ -86,6 +69,6 @@ class AdminPanelTest extends TestCase
         $admin = AdminUser::query()->where('email', 'system@example.com')->firstOrFail();
 
         $this->assertTrue($admin->hasRole('super-admin'));
-        $this->assertTrue($admin->organizations()->exists());
+        $this->assertFalse($admin->organizations()->exists());
     }
 }

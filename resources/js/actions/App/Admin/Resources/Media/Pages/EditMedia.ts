@@ -2,42 +2,41 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-const EditMedia = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+const EditMedia = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditMedia.url(args, options),
     method: 'get',
 })
 
 EditMedia.definition = {
     methods: ["get","head"],
-    url: '/admin/{tenant}/media/{record}/edit',
+    url: '/admin/media/{record}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-EditMedia.url = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions) => {
+EditMedia.url = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { record: args }
+    }
+
     if (Array.isArray(args)) {
         args = {
-            tenant: args[0],
-            record: args[1],
+            record: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        tenant: typeof args.tenant === 'object'
-        ? args.tenant.uuid
-        : args.tenant,
         record: args.record,
     }
 
     return EditMedia.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
             .replace('{record}', parsedArgs.record.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -45,9 +44,9 @@ EditMedia.url = (args: { tenant: string | number | { uuid: string | number }, re
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-EditMedia.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+EditMedia.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: EditMedia.url(args, options),
     method: 'get',
 })
@@ -55,9 +54,9 @@ EditMedia.get = (args: { tenant: string | number | { uuid: string | number }, re
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-EditMedia.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+EditMedia.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: EditMedia.url(args, options),
     method: 'head',
 })
@@ -65,9 +64,9 @@ EditMedia.head = (args: { tenant: string | number | { uuid: string | number }, r
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-const EditMediaForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const EditMediaForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditMedia.url(args, options),
     method: 'get',
 })
@@ -75,9 +74,9 @@ const EditMediaForm = (args: { tenant: string | number | { uuid: string | number
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-EditMediaForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+EditMediaForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditMedia.url(args, options),
     method: 'get',
 })
@@ -85,9 +84,9 @@ EditMediaForm.get = (args: { tenant: string | number | { uuid: string | number }
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-EditMediaForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+EditMediaForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: EditMedia.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',

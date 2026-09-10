@@ -2,8 +2,17 @@
 
 namespace App\Admin;
 
-use App\Http\Middleware\SetTenantContext;
-use App\Models\Organization;
+use App\Admin\Resources\AdminRoles\AdminRoleResource;
+use App\Admin\Resources\AdminUsers\AdminUserResource;
+use App\Admin\Resources\Categories\CategoryResource;
+use App\Admin\Resources\ConsultationRequests\ConsultationRequestResource;
+use App\Admin\Resources\Contents\ContentResource;
+use App\Admin\Resources\Media\MediaResource;
+use App\Admin\Resources\OperationLogs\OperationLogResource;
+use App\Admin\Resources\Organizations\OrganizationResource;
+use App\Admin\Resources\SystemSettings\SystemSettingResource;
+use App\Admin\Resources\Tags\TagResource;
+use App\Admin\Resources\Users\UserResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,12 +41,23 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->authGuard('admin')
             ->authPasswordBroker('admin_users')
-            ->tenant(Organization::class, 'uuid')
-            ->brandName(config('app.name').' 管理后台')
+            ->brandName(config('app.name').' SaaS 运营管理端')
             ->colors([
                 'primary' => Color::Blue,
             ])
-            ->discoverResources(in: app_path('Admin/Resources'), for: 'App\\Admin\\Resources')
+            ->resources([
+                OrganizationResource::class,
+                ConsultationRequestResource::class,
+                AdminUserResource::class,
+                AdminRoleResource::class,
+                UserResource::class,
+                ContentResource::class,
+                CategoryResource::class,
+                TagResource::class,
+                MediaResource::class,
+                SystemSettingResource::class,
+                OperationLogResource::class,
+            ])
             ->discoverPages(in: app_path('Admin/Pages'), for: 'App\\Admin\\Pages')
             ->pages([
                 Dashboard::class,
@@ -59,9 +79,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->tenantMiddleware([
-                SetTenantContext::class,
-            ], isPersistent: true);
+            ]);
     }
 }

@@ -41,6 +41,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'flash' => [
+                'consultation_submitted' => fn (): bool => (bool) $request->session()->get('consultation_submitted', false),
+            ],
         ];
     }
 }

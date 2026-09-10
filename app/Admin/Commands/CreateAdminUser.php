@@ -4,7 +4,6 @@ namespace App\Admin\Commands;
 
 use App\Models\AdminRole;
 use App\Models\AdminUser;
-use App\Models\Organization;
 use Database\Seeders\AdminAuthorizationSeeder;
 use Illuminate\Console\Command;
 
@@ -13,9 +12,7 @@ class CreateAdminUser extends Command
     protected $signature = 'admin:create
         {--name= : 管理员姓名}
         {--email= : 管理员邮箱}
-        {--password= : 管理员密码}
-        {--organization= : 组织名称}
-        {--organization-code= : 组织编码}';
+        {--password= : 管理员密码}';
 
     protected $description = '创建或更新一个超级管理员账号';
 
@@ -44,18 +41,7 @@ class CreateAdminUser extends Command
 
         $admin->syncRoles([AdminRole::findByName('super-admin', 'admin')]);
 
-        $organizationName = $this->option('organization') ?: config('app.name');
-        $organizationCode = $this->option('organization-code') ?: 'default';
-        $organization = Organization::query()->firstOrCreate(
-            ['code' => $organizationCode],
-            ['name' => $organizationName, 'status' => 'active'],
-        );
-        $organization->organizationMembers()->withTrashed()->updateOrCreate(
-            ['admin_user_id' => $admin->id],
-            ['display_name' => $admin->name, 'status' => 'active', 'joined_at' => now(), 'deleted_at' => null],
-        );
-
-        $this->info("超级管理员 {$admin->email} 已创建并加入组织 {$organization->name}，可通过 /admin 登录。");
+        $this->info("平台超级管理员 {$admin->email} 已创建，可通过 /admin 登录。");
 
         return self::SUCCESS;
     }

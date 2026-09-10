@@ -1,99 +1,75 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../../wayfinder'
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
-* @route '/admin/{tenant}/categories'
+* @route '/admin/categories'
 */
-const ListCategories = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ListCategories.url(args, options),
+const ListCategories = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListCategories.url(options),
     method: 'get',
 })
 
 ListCategories.definition = {
     methods: ["get","head"],
-    url: '/admin/{tenant}/categories',
+    url: '/admin/categories',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
-* @route '/admin/{tenant}/categories'
+* @route '/admin/categories'
 */
-ListCategories.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { tenant: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
-        args = { tenant: args.uuid }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            tenant: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        tenant: typeof args.tenant === 'object'
-        ? args.tenant.uuid
-        : args.tenant,
-    }
-
-    return ListCategories.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
-            .replace(/\/+$/, '') + queryParams(options)
+ListCategories.url = (options?: RouteQueryOptions) => {
+    return ListCategories.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
-* @route '/admin/{tenant}/categories'
+* @route '/admin/categories'
 */
-ListCategories.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: ListCategories.url(args, options),
+ListCategories.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: ListCategories.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
-* @route '/admin/{tenant}/categories'
+* @route '/admin/categories'
 */
-ListCategories.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: ListCategories.url(args, options),
+ListCategories.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: ListCategories.url(options),
     method: 'head',
 })
 
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
-* @route '/admin/{tenant}/categories'
+* @route '/admin/categories'
 */
-const ListCategoriesForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListCategories.url(args, options),
+const ListCategoriesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListCategories.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
-* @route '/admin/{tenant}/categories'
+* @route '/admin/categories'
 */
-ListCategoriesForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListCategories.url(args, options),
+ListCategoriesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListCategories.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Categories\Pages\ListCategories::__invoke
 * @see app/Admin/Resources/Categories/Pages/ListCategories.php:7
-* @route '/admin/{tenant}/categories'
+* @route '/admin/categories'
 */
-ListCategoriesForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ListCategories.url(args, {
+ListCategoriesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: ListCategories.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),

@@ -2,98 +2,74 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/{tenant}/media'
+* @route '/admin/media'
 */
-export const index = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(args, options),
+export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
     method: 'get',
 })
 
 index.definition = {
     methods: ["get","head"],
-    url: '/admin/{tenant}/media',
+    url: '/admin/media',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/{tenant}/media'
+* @route '/admin/media'
 */
-index.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { tenant: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
-        args = { tenant: args.uuid }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            tenant: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        tenant: typeof args.tenant === 'object'
-        ? args.tenant.uuid
-        : args.tenant,
-    }
-
-    return index.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
-            .replace(/\/+$/, '') + queryParams(options)
+index.url = (options?: RouteQueryOptions) => {
+    return index.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/{tenant}/media'
+* @route '/admin/media'
 */
-index.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(args, options),
+index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/{tenant}/media'
+* @route '/admin/media'
 */
-index.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: index.url(args, options),
+index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: index.url(options),
     method: 'head',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/{tenant}/media'
+* @route '/admin/media'
 */
-const indexForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/{tenant}/media'
+* @route '/admin/media'
 */
-indexForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\ListMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/ListMedia.php:7
-* @route '/admin/{tenant}/media'
+* @route '/admin/media'
 */
-indexForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, {
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -107,98 +83,74 @@ index.form = indexForm
 /**
 * @see \App\Admin\Resources\Media\Pages\CreateMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/CreateMedia.php:7
-* @route '/admin/{tenant}/media/create'
+* @route '/admin/media/create'
 */
-export const create = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: create.url(args, options),
+export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: create.url(options),
     method: 'get',
 })
 
 create.definition = {
     methods: ["get","head"],
-    url: '/admin/{tenant}/media/create',
+    url: '/admin/media/create',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Media\Pages\CreateMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/CreateMedia.php:7
-* @route '/admin/{tenant}/media/create'
+* @route '/admin/media/create'
 */
-create.url = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { tenant: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'uuid' in args) {
-        args = { tenant: args.uuid }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            tenant: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        tenant: typeof args.tenant === 'object'
-        ? args.tenant.uuid
-        : args.tenant,
-    }
-
-    return create.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
-            .replace(/\/+$/, '') + queryParams(options)
+create.url = (options?: RouteQueryOptions) => {
+    return create.definition.url + queryParams(options)
 }
 
 /**
 * @see \App\Admin\Resources\Media\Pages\CreateMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/CreateMedia.php:7
-* @route '/admin/{tenant}/media/create'
+* @route '/admin/media/create'
 */
-create.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: create.url(args, options),
+create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: create.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\CreateMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/CreateMedia.php:7
-* @route '/admin/{tenant}/media/create'
+* @route '/admin/media/create'
 */
-create.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: create.url(args, options),
+create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: create.url(options),
     method: 'head',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\CreateMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/CreateMedia.php:7
-* @route '/admin/{tenant}/media/create'
+* @route '/admin/media/create'
 */
-const createForm = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(args, options),
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\CreateMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/CreateMedia.php:7
-* @route '/admin/{tenant}/media/create'
+* @route '/admin/media/create'
 */
-createForm.get = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(args, options),
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
     method: 'get',
 })
 
 /**
 * @see \App\Admin\Resources\Media\Pages\CreateMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/CreateMedia.php:7
-* @route '/admin/{tenant}/media/create'
+* @route '/admin/media/create'
 */
-createForm.head = (args: { tenant: string | number | { uuid: string | number } } | [tenant: string | number | { uuid: string | number } ] | string | number | { uuid: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(args, {
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
@@ -212,42 +164,41 @@ create.form = createForm
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-export const edit = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
 
 edit.definition = {
     methods: ["get","head"],
-    url: '/admin/{tenant}/media/{record}/edit',
+    url: '/admin/media/{record}/edit',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-edit.url = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions) => {
+edit.url = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { record: args }
+    }
+
     if (Array.isArray(args)) {
         args = {
-            tenant: args[0],
-            record: args[1],
+            record: args[0],
         }
     }
 
     args = applyUrlDefaults(args)
 
     const parsedArgs = {
-        tenant: typeof args.tenant === 'object'
-        ? args.tenant.uuid
-        : args.tenant,
         record: args.record,
     }
 
     return edit.definition.url
-            .replace('{tenant}', parsedArgs.tenant.toString())
             .replace('{record}', parsedArgs.record.toString())
             .replace(/\/+$/, '') + queryParams(options)
 }
@@ -255,9 +206,9 @@ edit.url = (args: { tenant: string | number | { uuid: string | number }, record:
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-edit.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -265,9 +216,9 @@ edit.get = (args: { tenant: string | number | { uuid: string | number }, record:
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-edit.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
@@ -275,9 +226,9 @@ edit.head = (args: { tenant: string | number | { uuid: string | number }, record
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-const editForm = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const editForm = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -285,9 +236,9 @@ const editForm = (args: { tenant: string | number | { uuid: string | number }, r
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-editForm.get = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.get = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -295,9 +246,9 @@ editForm.get = (args: { tenant: string | number | { uuid: string | number }, rec
 /**
 * @see \App\Admin\Resources\Media\Pages\EditMedia::__invoke
 * @see app/Admin/Resources/Media/Pages/EditMedia.php:7
-* @route '/admin/{tenant}/media/{record}/edit'
+* @route '/admin/media/{record}/edit'
 */
-editForm.head = (args: { tenant: string | number | { uuid: string | number }, record: string | number } | [tenant: string | number | { uuid: string | number }, record: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.head = (args: { record: string | number } | [record: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
