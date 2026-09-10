@@ -63,6 +63,9 @@ jobs:
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Generate Wayfinder routes
+        run: php artisan wayfinder:generate --no-interaction
+
       - name: Prepare test environment
         run: |
           cp .env.example .env
@@ -126,6 +129,9 @@ jobs:
 
       - name: Install production PHP dependencies
         run: composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Generate Wayfinder routes
+        run: php artisan wayfinder:generate --no-interaction
 
       - name: Build frontend assets
         run: |
