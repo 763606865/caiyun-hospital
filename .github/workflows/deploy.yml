@@ -38,6 +38,27 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Cache PHP dependencies
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            ~/.cache/composer/files
+            vendor
+          key: ${{ runner.os }}-${{ runner.arch }}-php-8.5-vendor-ci-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-php-8.5-vendor-ci-
+
+      - name: Cache frontend dependencies
+        id: node-modules-cache
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ runner.arch }}-node-22-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Prepare Laravel runtime directories
+        run: mkdir -p bootstrap/cache storage/framework/{cache,sessions,views} storage/logs
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -49,6 +70,7 @@ jobs:
           php artisan migrate --force
 
       - name: Install frontend dependencies
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Run CI checks
@@ -80,13 +102,36 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Cache PHP dependencies
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            ~/.cache/composer/files
+            vendor
+          key: ${{ runner.os }}-${{ runner.arch }}-php-8.5-vendor-production-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-php-8.5-vendor-production-
+
+      - name: Cache frontend dependencies
+        id: node-modules-cache
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ runner.arch }}-node-22-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Prepare Laravel runtime directories
+        run: mkdir -p bootstrap/cache storage/framework/{cache,sessions,views} storage/logs
 
       - name: Install production PHP dependencies
         run: composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader
 
       - name: Build frontend assets
         run: |
-          npm ci
+          if [[ "${{ steps.node-modules-cache.outputs.cache-hit }}" != 'true' ]]; then
+            npm ci
+          fi
           npm run build
 
       - name: Create release archive
