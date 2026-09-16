@@ -41,7 +41,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Cache PHP dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cache/composer/files
@@ -52,7 +52,7 @@ jobs:
 
       - name: Cache frontend dependencies
         id: node-modules-cache
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ runner.arch }}-node-22-modules-${{ hashFiles('package-lock.json') }}
@@ -111,7 +111,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Cache PHP dependencies
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cache/composer/files
@@ -122,7 +122,7 @@ jobs:
 
       - name: Cache frontend dependencies
         id: node-modules-cache
-        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: node_modules
           key: ${{ runner.os }}-${{ runner.arch }}-node-22-modules-${{ hashFiles('package-lock.json') }}
